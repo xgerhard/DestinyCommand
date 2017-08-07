@@ -1,5 +1,6 @@
 <?php
 
+use App\OAuthProvider;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,7 +11,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/auth/{service}', 'AuthController@AuthHandler');
 
-Route::get('/', function () {
+Route::get('/', function () 
+{	
     return view('welcome');
 });
