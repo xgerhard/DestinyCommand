@@ -13,6 +13,30 @@ use App\OAuthProvider;
 */
 Route::get('/auth/{service}', 'AuthController@AuthHandler');
 
+Route::get('/api/command', 'CommandController@CommandHandler');
+
+Route::group(['prefix' => 'dashboard', 'middleware' => 'CheckOAuth:Bungie'], function()
+{
+    Route::get('/', function()
+	{
+		echo 'dashboard home';
+    });
+
+	Route::prefix('settings')->group(function()
+    {
+		Route::get('/', function()
+		{
+			echo 'settings';
+		});
+		
+		Route::get('/nightbot', ['middleware' => 'CheckOAuth:Nightbot', function()
+		{
+			echo 'nightbot settings';
+		}]);
+    });
+
+});
+
 Route::get('/', function () 
 {	
     return view('welcome');

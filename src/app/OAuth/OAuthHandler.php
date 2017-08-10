@@ -10,6 +10,8 @@ use Carbon\Carbon;
 
 class OAuthHandler
 {
+	public $provider;
+
 	public function __construct($strService)
 	{
 		$this->provider = OAuthProvider::where('name', $strService)->firstOrFail();
@@ -105,6 +107,11 @@ class OAuthHandler
 			)
 		);
 		return json_decode($oRH->run()[0]);
+	}
+
+	private function isAuthValid($iAuthSessionId)
+	{
+		return true;
 	}
 
 	private function handleError($strError)
