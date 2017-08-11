@@ -17,14 +17,14 @@ class CheckOAuth
      */
     public function handle($request, Closure $next, $strService)
     {
-		$OAuthHandler = new OAuthHandler($strService);
-		if($request->session()->has($strService .'-auth'))
-		{
-			if($OAuthHandler->isAuthValid($request->session()->get($strService .'-auth')))
-			{
-				return $next($request);
-			}
-		}
-		return redirect($OAuthHandler->provider->local_login);
+        $OAuthHandler = new OAuthHandler($strService);
+        if($request->session()->has($strService .'-auth'))
+        {
+            if($OAuthHandler->isAuthValid($request->session()->get($strService .'-auth')))
+            {
+                return $next($request);
+            }
+        }
+        return redirect($OAuthHandler->provider->local_login);
     }
 }

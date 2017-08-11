@@ -5,5 +5,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class OAuthProvider extends Model
 {
-	protected $fillable = ['name'];
+    protected $fillable = ['name'];
 }
