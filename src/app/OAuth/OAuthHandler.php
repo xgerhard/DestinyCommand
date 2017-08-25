@@ -8,6 +8,7 @@ use App\RequestHandler;
 use App\OAuth\OAuthProvider;
 use App\OAuth\OAuthSession;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 
 class OAuthHandler
 {
@@ -104,20 +105,21 @@ class OAuthHandler
     */
     private function getTokens($strCode, $bRefresh = false)
     {
-        $oRH = new RequestHandler;
-        $oRH->add(
-            $this->provider->token_url,
-            // Add header for Post
-            array(),
-            // Post values
-            array(
+        // Guzzle should be easy to use hmm
+        $oClient = new Client([
+            'http_errors' => false, 
+            'verify' => false
+        ]);
+
+        $oResponse = $oClient->request('POST', $this->provider->token_url, [
+            'form_params' => [
                 'grant_type' => $bRefresh === false ? 'authorization_code' : 'refresh_token',
                 $bRefresh === false ? 'code' : 'refresh_token' => $strCode,
-                'client_id' => $this->provider->client_id,
+                'client_id'    => $this->provider->client_id,
                 'client_secret' => $this->provider->client_secret
-            )
-        );
-        return json_decode($oRH->run()[0]);
+            ]
+        ]);
+        return json_decode($oResponse->getBody()->getContents());
     }
 
     /*
