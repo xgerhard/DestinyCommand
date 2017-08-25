@@ -2,7 +2,8 @@
 namespace App\OAuth;
 
 use Exception;
-use Request;
+use Session;
+use Redirect;
 use App\RequestHandler;
 use App\OAuth\OAuthProvider;
 use App\OAuth\OAuthSession;
@@ -48,7 +49,8 @@ class OAuthHandler
 
             $OAuthSession->save();
             $request->session()->put($this->provider->name .'-auth', $OAuthSession->id);
-            echo 'Redirect to $this->provider->local_redirect';
+
+            Redirect::to($this->provider->local_redirect)->send();
             return $OAuthSession->access_token;
         }
 
@@ -61,19 +63,27 @@ class OAuthHandler
         // Else it will be a new auth request
         else
         {
-            // Create and save state
-            $strState = $this->generateState();
-            $request->session()->put('state', $strState);
-
-            // Send user to authorization page
-            $strUrl = $this->provider->auth_url .'&state='. $strState .'&client_id='. $this->provider->client_id 
-            . (isset($this->provider->scope) ? '&scope='. $this->provider->scope : '')
-            . (isset($this->provider->redirect_url) ? '&redirect_uri='. urlencode($this->provider->redirect_url) : '');
-
             // Go Auth!
-            echo redirect($strUrl);
+            Redirect::to($this->getAuthUrl())->send();
         }
         return false;
+    }
+
+    /*
+    * getAuthUrl
+    * Build the auth url and save state to session
+    * return (string) auth url
+    */
+    public function getAuthUrl()
+    {
+        // Create and save state
+        $strState = $this->generateState();
+        Session::put('state', $strState);
+
+        // Build url
+        return $this->provider->auth_url .'&state='. $strState .'&client_id='. $this->provider->client_id 
+        . (isset($this->provider->scope) ? '&scope='. $this->provider->scope : '')
+        . (isset($this->provider->redirect_url) ? '&redirect_uri='. urlencode($this->provider->redirect_url) : '');
     }
 
     /*

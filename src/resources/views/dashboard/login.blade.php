@@ -1,0 +1,1 @@
+<a href="{{ $auth_url }}" target="blank">Login with Bungie</a>

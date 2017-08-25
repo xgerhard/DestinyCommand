@@ -25,6 +25,6 @@ class CheckOAuth
                 return $next($request);
             }
         }
-        return redirect($OAuthHandler->provider->local_login);
+        return redirect($OAuthHandler->provider->local_redirect .'/login');
     }
 }

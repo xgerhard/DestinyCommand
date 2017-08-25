@@ -1,6 +1,6 @@
 <?php
+use App\OAuth\OAuthHandler;
 
-use App\OAuthProvider;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,7 +34,14 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'CheckOAuth:Bungie'], fun
             echo 'nightbot settings';
         }]);
     });
+});
 
+Route::get('/dashboard/login', function () 
+{
+    $OAuthHandler = new OAuthHandler('Bungie');
+    return view('dashboard/login', [
+        'auth_url' => $OAuthHandler->getAuthUrl()
+    ]);
 });
 
 Route::get('/', function () 
