@@ -23,7 +23,7 @@ class RequestHandler
             $mh = curl_multi_init();
 
             // Add origin
-            $aHeaders[] = 'Origin: https://2g.be';
+            //$aHeaders[] = 'Origin: https://2g.be';
 
             foreach ($this->queue as $id => $d) 
             {

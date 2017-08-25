@@ -14,7 +14,7 @@ class OAuthHandler
 
     public function __construct($strService)
     {
-        $this->provider = OAuthProvider::where('name', $strService)->firstOrFail();
+        $this->setProvider($strService);
     }
 
     public function runAuth($request)
@@ -40,6 +40,7 @@ class OAuthHandler
             $OAuthSession->access_token = $oTokens->access_token;
             $OAuthSession->refresh_token = $oTokens->refresh_token;
             $OAuthSession->expires_in = Carbon::now()->addSeconds($oTokens->expires_in);
+            $OAuthSession->refresh_expires_in = Carbon::now()->addSeconds(isset($oTokens->refresh_expires_in) ? $oTokens->refresh_expires_in : 5184000); // 60 Days default.
             $OAuthSession->provider_id = $this->provider->id;
 
             // Bungie includes membershipId in Token response, I guess we should save it directly here..
@@ -82,7 +83,7 @@ class OAuthHandler
     */
     private function generateState()
     {
-        return sha1(time() . rand(146546546, 8789676764));
+        return sha1(time() . rand(1, 9999));
     }
 
     /*
@@ -109,13 +110,56 @@ class OAuthHandler
         return json_decode($oRH->run()[0]);
     }
 
-    private function isAuthValid($iAuthSessionId)
+    /*
+    * isAuthValid
+    * Checks if Authsession is still valid
+    * required (int) OAuthSessionId
+    * return (boolean) true = valid / false = invalid
+    */
+    public function isAuthValid($iAuthSessionId)
     {
-        return true;
+        if($OAuthSession = OAuthSession::find($iAuthSessionId))
+        {
+            // Access token still valid
+            if($OAuthSession->expires_in > Carbon::now())
+            {
+               return true;
+            }
+
+            // Access token expired, check if we can refresh it
+            elseif($OAuthSession->refresh_expires_in > Carbon::now())
+            {
+                // refresh the token
+                $this->setProvider($OAuthSession->provider_id, true);
+                $oTokens = $this->getTokens($OAuthSession->refresh_token, true);
+                if(isset($oTokens->error)) $this->handleError($oTokens->error); // Bungie error field
+                if(isset($oTokens->name)) $this->handleError($oTokens->name); // Nightbot error field
+
+                // Save new tokens
+                $OAuthSession->access_token = $oTokens->access_token;
+                $OAuthSession->refresh_token = $oTokens->refresh_token;
+                $OAuthSession->expires_in = Carbon::now()->addSeconds($oTokens->expires_in);
+                $OAuthSession->refresh_expires_in = Carbon::now()->addSeconds(isset($oTokens->refresh_expires_in) ? $oTokens->refresh_expires_in : 5184000); // 60 Days default.
+                $OAuthSession->save();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+    * setProvider
+    * Set the provider
+    * required (int/string) Id or Name of provider
+    * optional (boolean) if first parameter is an Id set this value true
+    */
+    public function setProvider($strService, $id = false)
+    {
+        $this->provider = $id === false ? OAuthProvider::where('name', $strService)->firstOrFail() :  OAuthProvider::findOrFail($strService);
     }
 
     private function handleError($strError)
-    {
+    {       
         switch($strError)
         {
             case 'access_denied':
