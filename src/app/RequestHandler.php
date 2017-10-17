@@ -1,93 +1,88 @@
 <?php
 namespace App;
 
+use Exception;
+use Log;
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise as GuzzlePromise;
+use GuzzleHttp\Client\Exception\ConnectException;
+
 class RequestHandler
 {
-    private $queue = array();
+    private $q = [];
 
-    public function add($strUrl, $aHeaders = array(), $xPost = false)
+    public function addRequest($oRequest, $strCategory, $strIdentifier)
     {
-        $this->queue[] = array(
-            'url'       => $this->file_url($strUrl),
-            'headers'   => $aHeaders,
-            'post'      => $xPost
-        );
+        $this->q[$strCategory][$strIdentifier] = $oRequest;
     }
 
-    public function run()
+    public function requester($xKey, $i = 0)
     {
-        if(!empty($this->queue))
+        /*
+        So this request function is a bit messy. Still not sure if its on my or Bungies end, but cURL is throwing ALOT of 'name lookup timed out' errors.
+        Since we're working with a variety bots with different timeouts, we have to send a response in max 5-8 seconds.
+        Temporary fix, have a low connect_timeout and just try to connect a few times. This reduced the timeout errors alot, however a few request will still fail after 5 attempts.
+        */
+
+        $oClient = new Client([
+            'http_errors' => false, 
+            'verify' => false,
+            'timeout' => 6, // Response timeout
+            'connect_timeout' => 1.5,
+            'headers' => ['X-API-Key' => $_ENV['BUNGIE_API_KEY']],
+            'force_ip_resolve' => 'v4'
+        ]);
+
+        $a = [];
+        if(!empty($this->q))
         {
-            $curly = array();
-            $result = array();
-            $mh = curl_multi_init();
-
-            // Add origin
-            //$aHeaders[] = 'Origin: https://2g.be';
-
-            foreach ($this->queue as $id => $d) 
+            foreach($this->q AS $strCategory => $aCategoryValue)
             {
-                $curly[$id] = curl_init();
-                curl_setopt($curly[$id], CURLOPT_URL,               $d['url']);
-                curl_setopt($curly[$id], CURLOPT_HEADER,            0);
-                curl_setopt($curly[$id], CURLOPT_RETURNTRANSFER,    1);
-                curl_setopt($curly[$id], CURLOPT_USERAGENT,         'XgDestinyCommand - xgerhard@2g.be');
-                curl_setopt($curly[$id], CURLOPT_TIMEOUT,           7);
-                
-                // Fix for localhost / disable on live
-                curl_setopt($curly[$id], CURLOPT_SSL_VERIFYPEER,    0);
-
-                // Post requests
-                if(isset($d['post']) && $d['post'] !== false)
+                if($strCategory === $xKey)
                 {
-                    $aHeaders[] = 'Content-Type:application/x-www-form-urlencoded';
-                    curl_setopt($curly[$id], CURLOPT_POST, true);
-                    curl_setopt($curly[$id], CURLOPT_POSTFIELDS, http_build_query ($d['post']));
+                    foreach($aCategoryValue AS $strIdentifier => $oRequest)
+                    {
+                        $a[$strIdentifier] = $oClient->requestAsync('GET', $oRequest->url);
+                    }
                 }
-                else curl_setopt($curly[$id], CURLOPT_POST, false);
-
-                // Additonal headers
-                if(isset($d['headers']) && !empty($d['headers'])) $aHeaders = array_merge($aHeader, $d['headers']);
-
-                // Add headers
-                if(!empty($aHeaders)) curl_setopt($curly[$id], CURLOPT_HTTPHEADER, $aHeaders);
-
-                curl_multi_add_handle($mh, $curly[$id]);
             }
-
-            // execute the handles
-            $running = null;
-            do {
-                curl_multi_exec($mh, $running);
-            }
-            while($running > 0);
-
-            // get content and remove handles
-            foreach($curly as $id => $c) 
-            {
-                $info = curl_multi_info_read($mh);
-                if(isset($info['result']) AND $info['result'] == 28) throw new Exception('Time-out error, please try again later.');
-                $result[$id] = curl_multi_getcontent($c);
-                curl_multi_remove_handle($mh, $c);
-            }
-            curl_multi_close($mh);
-            return $result;
         }
-        return false;
-    }
 
-    public function file_url($strUrl)
-    {
-        $aParts = parse_url($strUrl);
-        $aPathParts = array_map('rawurldecode', explode('/', $aParts['path']));
-        $strScheme = !isset($aParts['scheme']) ? "//" : $aParts['scheme'] . '://';
+        $aReturn = [];
+        if(!empty($a))
+        {
+            foreach(GuzzlePromise\settle($a)->wait() AS $strKey => $aResult)
+            {
+                if($aResult['state'] === 'fulfilled')
+                {
+                    $oResponse = $aResult['value'];
+                    switch($oResponse->getStatusCode())
+                    {
+                        case 200:
+                            $aReturn[$strKey] = json_decode($oResponse->getBody()->getContents());
+                        break;
 
-        return
-            $strScheme .
-            $aParts['host'] .
-            implode('/', array_map('rawurlencode', $aPathParts)) .
-            (isset($aParts['query']) ? "?". $aParts['query'] : "")
-        ;
+                        default: //case 503:
+                            throw new Exception('Something went wrong, please try again later (1)');
+                        break;
+                    }
+                }
+                else
+                {
+                    if($aResult['reason'] instanceof \GuzzleHttp\Exception\ConnectException)
+                    {
+                        if($i<=5)
+                        {
+                            $i++;
+                            $aHandlerContext = $aResult['reason']->getHandlerContext();
+                            Log::debug($xKey .' - '. $i .' attempt - '. $aResult['reason']->getCode() .' - '. $aResult['reason']->getMessage() . (isset($aHandlerContext['url']) ? ' - '. $aHandlerContext['url'] : ""));
+                            return $this->requester($xKey, $i);
+                        }
+                    }
+                }
+            }
+        }
+        return $aReturn;
     }
 }
 ?>
