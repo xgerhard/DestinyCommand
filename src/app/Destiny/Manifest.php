@@ -14,6 +14,7 @@ class Manifest
         $this->manifest_path = storage_path() .'/manifest/';
         $this->setting_file = $this->manifest_path . 'settings.json';
         $this->settings = $this->loadSettings();
+        //echo $this->check(); die;
     }
 
     public function check()

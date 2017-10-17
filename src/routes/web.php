@@ -13,13 +13,13 @@ use App\OAuth\OAuthHandler;
 */
 Route::get('/auth/{service}', 'AuthController@AuthHandler');
 
-Route::get('/api/command', 'CommandController@CommandHandler');
+Route::get('/api/command', 'CommandController@parseRequest');
 
 Route::group(['prefix' => 'dashboard', 'middleware' => 'CheckOAuth:Bungie'], function()
 {
     Route::get('/', function()
     {
-        echo 'dashboard home';
+        return view('dashboard/home', []);
     });
 
     Route::prefix('settings')->group(function()
@@ -40,6 +40,14 @@ Route::get('/dashboard/login', function ()
 {
     $OAuthHandler = new OAuthHandler('Bungie');
     return view('dashboard/login', [
+        'auth_url' => $OAuthHandler->getAuthUrl()
+    ]);
+});
+
+Route::get('/dashboard/settings/nightbot/login', function () 
+{
+    $OAuthHandler = new OAuthHandler('Nightbot');
+    return view('dashboard/nightbot/login', [
         'auth_url' => $OAuthHandler->getAuthUrl()
     ]);
 });
