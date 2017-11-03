@@ -6,7 +6,8 @@ use App\Command\Query;
 class Command
 {
     public $user;
-    public $userId;
+    public $userId = 0;
+    public $channelId = 0;
     public $channel;
     public $query;
     public $token;
@@ -50,6 +51,11 @@ class Command
     {
         $this->channel = $strChannel;
     }
+	
+	public function setChannelId($iChannelId)
+    {
+        $this->channelId = $iChannelId;
+    }
 
     public function setQuery($strQuery)
     {
@@ -71,7 +77,7 @@ class Command
 
     public function setPlatform($strProvider)
     {
-        $aProviders = array('youtube', 'twitch', 'discord', 'slack');
+        $aProviders = array('youtube', 'twitch', 'discord', 'slack', 'json');
         if(!in_array(strtolower(trim($strProvider)), $aProviders)) $strProvider = 'twitch';
         $this->platform = strtolower(trim($strProvider));
     }

@@ -6,7 +6,7 @@ class Action
     public function __construct($strAction)
     {
         $aAction = false;
-        $aFunctions = array("isTextCommand", "isGearCommand", "isStatCommand");
+        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isGearCommand", "isStatCommand");
         foreach($aFunctions AS $strFunction)
         {
             $aAction = $this->{$strFunction}($strAction);
@@ -21,6 +21,26 @@ class Action
         {
             $this->$k = $v;
         }
+    }
+
+	private function isTrialsReportCommand($strAction)
+    {
+        $aTrialsReportActions = array(
+            "trialsteam" => "getFireteam",
+            "tt" => "getFireteam"
+        );
+        
+        if(isset($aTrialsReportActions[$strAction]))
+        {
+            return array(
+                'key'		=> 'TrialsTeam',
+                'title'		=> 'TrialsTeam',
+                'provider'	=> 'TrialsReportProvider',
+                'endpoint'	=> $aTrialsReportActions[$strAction],
+                'filter'	=> 'getFireteamStats'
+            );
+        }
+        return false;
     }
 
     private function isGearCommand($strAction)
@@ -236,7 +256,6 @@ class Action
             'ratemybutt' => $this->RateMyButt(),
             'rmb' => $this->RateMyButt(),
             'xur' => 'This command will return when Xur data is available in the Bungie API',
-            'trialsteam' => '\'Trialsteam\' command is in development',
             'trialsmap' => '\'Trialsmap\' command is in development',
             'nightfall' => '\'Nightfall\' command is in development',
             'elo' => '\'ELO\' command is in development',

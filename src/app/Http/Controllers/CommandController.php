@@ -13,6 +13,7 @@ use App\Destiny\Manifest;
 
 use App\Destiny\EquipmentItem;
 use App\Destiny\Stat;
+use App\Destiny\TrialsReportFireteamReport;
 
 use App\Providers\BungieProvider;
 
@@ -81,6 +82,12 @@ class CommandController
 
             // Run the command
             $aRes = $this->runCommand();
+			if($this->command->platform == 'json')
+            {
+                header('Content-type:application/json;charset=utf-8');
+                echo json_encode($aRes);
+                die;
+            }
 
             // Leading @ to tag users in Twitch chat.
             $strRes = '@' .$this->command->responseUser .': ';
@@ -107,7 +114,7 @@ class CommandController
                         if(isset($aRes['response'][$strKey]))
                         {
                             $bPlaylistIntro = false;
-                            $strRes .= $oPlayer->displayName .': ';
+                            $strRes .= ($oPlayer->membershipType == 4 ? $this->formatNoBnet($oPlayer->displayName) : $oPlayer->displayName) .': ';
                             if(count($aRes['response'][$strKey]) > 1) $strRes .= '[';
                             $bFound = false;
 
@@ -138,6 +145,12 @@ class CommandController
                                             $strCharacterRes .= ", ";
                                             $bFound = true;
                                         break;
+
+										case $x instanceof TrialsReportFireteamReport:
+											$oFireteamStatReport = $x;
+											$strCharacterRes .= '['. $this->formatNoBnet($oFireteamStatReport->displayName) .':  Games: '. $oFireteamStatReport->games .' (W'. $oFireteamStatReport->winp .'%) | KD: '. $oFireteamStatReport->kd .' | KA/D: '. $oFireteamStatReport->kda .'], ';
+											$bFound = true;
+										break;
 
                                         default:
                                             $bFound = true;
@@ -240,9 +253,6 @@ class CommandController
                     continue;
                 }
  
-                // Setup playersearch
-                $oBungie->SearchDestinyPlayer($strGamertag);
-
                 // Since platform parameter is not required, we have to set a default for if its not given
                 if(isset($this->command->query->consoles[$i]))
                     $iTempConsole = $this->command->query->consoles[$i];
@@ -251,6 +261,16 @@ class CommandController
                 else
                     $iTempConsole = reset($this->command->query->consoles);
 
+				// Pc lookup but no hastag found, lets replace - with #
+				if($iTempConsole == 4 && strpos($strGamertag, '#') === false)
+				{
+					$strGamertag = $this->formatToHashtag($strGamertag);
+					$this->command->query->gamertags[$i] = $strGamertag;
+				}
+
+				// Setup playersearch
+                $oBungie->SearchDestinyPlayer($strGamertag);
+				
                 // Save temp player array so we can filter these in the player search responses
                 $aTempPlayers[$strGamertag] = $iTempConsole;
             }
@@ -261,8 +281,11 @@ class CommandController
             foreach($aPlayersResults AS $strGamertag => $aFoundPlayers)
             {
                 if(empty($aFoundPlayers))
+				{
+					if($aTempPlayers[$strGamertag] == 4 || strpos($strGamertag, '#') !== false) $strGamertag = $this->formatNoBnet($strGamertag);
                     throw new Exception('Player '. $strGamertag .' not found');
-                else
+                }
+				else
                 {
                     // Loop players in the response and filter out the right platform
                     $aPlayersTemp = [];
@@ -282,7 +305,7 @@ class CommandController
                 }
             }
         }
-        elseif($this->command->bot == 'charlemagne' && Input::has('membershipId') && Input::has('membershipType') && Input::has('displayName'))
+        elseif(Input::has('membershipId') && Input::has('membershipType') && Input::has('displayName'))
         {
             $aPlayers[Input::get('displayName')] = (object) array(
                 'membershipId' => Input::get('membershipId'),
@@ -292,6 +315,20 @@ class CommandController
         }
         return $aPlayers;
     }
+
+	private function formatToHashtag($strGamertag)
+	{
+		$iPos = strrpos($strGamertag, "-");
+		if($iPos !== false) $strGamertag = substr_replace($strGamertag, '#', $iPos, 1);
+		return $strGamertag;
+	}
+	
+	private function formatNoBnet($strGamertag)
+	{
+		$aGamertag = explode("#", $strGamertag);
+		if(count($aGamertag) > 1) $strGamertag =  str_replace("#". end($aGamertag), "", $strGamertag);
+		return $strGamertag;
+	}
 
     private function returnerino($res)
     {

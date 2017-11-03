@@ -29,7 +29,7 @@ class RequestHandler
             'verify' => false,
             'timeout' => 6, // Response timeout
             'connect_timeout' => 1.5,
-            'headers' => ['X-API-Key' => $_ENV['BUNGIE_API_KEY']],
+            'headers' => ['X-API-Key' => $_ENV['BUNGIE_API_KEY'], 'Origin' => 'https://destinycommand.com'],
             'force_ip_resolve' => 'v4'
         ]);
 
