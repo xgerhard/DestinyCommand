@@ -6,6 +6,7 @@ class Action
     public function __construct($strAction)
     {
         $aAction = false;
+        $strAction = $this->getAlias($strAction);
         $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isGearCommand", "isStatCommand");
         foreach($aFunctions AS $strFunction)
         {
@@ -29,7 +30,7 @@ class Action
             "trialsteam" => "getFireteam",
             "tt" => "getFireteam"
         );
-        
+
         if(isset($aTrialsReportActions[$strAction]))
         {
             return array(
@@ -199,7 +200,7 @@ class Action
             }
         }
 
-        if(isset($strAction[0]) && $strAction[0] == 'c')
+        if(isset($strAction[0]) && $strAction[0] == 'c' && strlen($strAction) > 2)
         {
             $bSeperate = true;
             $strAction = substr($strAction, 1);
@@ -211,6 +212,8 @@ class Action
             $strAction = substr($strAction, 0, -3);
         }
 
+        // check alias again, since we removed the pga and c part
+        $strAction = $this->getAlias($strAction);
         if($strAction != "" && isset($aStatActions[$strAction]))
         {
             $xStat = $aStatActions[$strAction];
@@ -254,7 +257,6 @@ class Action
             'commands' => 'Command list: destinycommand.com',
             'setplayer' => 'This feature will return with the full version later',
             'ratemybutt' => $this->RateMyButt(),
-            'rmb' => $this->RateMyButt(),
             'xur' => 'This command will return when Xur data is available in the Bungie API',
             'trialsmap' => '\'Trialsmap\' command is in development',
             'nightfall' => '\'Nightfall\' command is in development',
@@ -283,6 +285,23 @@ class Action
             if($a == 1) $i = 7; // 5/7 ratings Kappa
         }
         return 'butt rated: '. $x .'/'. $i; 
+    }
+
+    private function getAlias($strAction)
+    {
+        $a = array(
+            'tt' => 'trialsteam',
+            'kinetic' => 'primary',
+            'energy' => 'secondary',
+            'power' => 'heavy',
+            'loadout' => 'weapons',
+            'rmb' => 'ratemybutt',
+            'combatrating' => 'cr',
+            'winloss' => 'wl',
+            'mostkills' => 'mk',
+            'nade' => 'grenade'
+        );
+        return isset($a[$strAction]) ? $a[$strAction] : $strAction;
     }
 }
 ?>
