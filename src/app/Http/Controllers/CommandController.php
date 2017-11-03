@@ -82,7 +82,7 @@ class CommandController
 
             // Run the command
             $aRes = $this->runCommand();
-			if($this->command->platform == 'json')
+            if($this->command->platform == 'json')
             {
                 header('Content-type:application/json;charset=utf-8');
                 echo json_encode($aRes);
@@ -146,11 +146,11 @@ class CommandController
                                             $bFound = true;
                                         break;
 
-										case $x instanceof TrialsReportFireteamReport:
-											$oFireteamStatReport = $x;
-											$strCharacterRes .= '['. $this->formatNoBnet($oFireteamStatReport->displayName) .':  Games: '. $oFireteamStatReport->games .' (W'. $oFireteamStatReport->winp .'%) | KD: '. $oFireteamStatReport->kd .' | KA/D: '. $oFireteamStatReport->kda .'], ';
-											$bFound = true;
-										break;
+                                        case $x instanceof TrialsReportFireteamReport:
+                                            $oFireteamStatReport = $x;
+                                            $strCharacterRes .= '['. $this->formatNoBnet($oFireteamStatReport->displayName) .':  Games: '. $oFireteamStatReport->games .' (W'. $oFireteamStatReport->winp .'%) | KD: '. $oFireteamStatReport->kd .' | KA/D: '. $oFireteamStatReport->kda .'], ';
+                                            $bFound = true;
+                                        break;
 
                                         default:
                                             $bFound = true;
@@ -215,7 +215,7 @@ class CommandController
             if(empty($aPlayers)) throw new Exception('No players found');
         }
 
-		// Since were using multiCurl were looping the actions twice, first time to setup the needed request, so we can perform them all at once. Second loop we can read the responses.
+        // Since were using multiCurl were looping the actions twice, first time to setup the needed request, so we can perform them all at once. Second loop we can read the responses.
         foreach($this->command->query->actions AS $oAction)
         {
             if($oAction->provider == 'plain_text') continue;
@@ -261,16 +261,16 @@ class CommandController
                 else
                     $iTempConsole = reset($this->command->query->consoles);
 
-				// Pc lookup but no hastag found, lets replace - with #
-				if($iTempConsole == 4 && strpos($strGamertag, '#') === false)
-				{
-					$strGamertag = $this->formatToHashtag($strGamertag);
-					$this->command->query->gamertags[$i] = $strGamertag;
-				}
+                // Pc lookup but no hastag found, lets replace - with #
+                if($iTempConsole == 4 && strpos($strGamertag, '#') === false)
+                {
+                    $strGamertag = $this->formatToHashtag($strGamertag);
+                    $this->command->query->gamertags[$i] = $strGamertag;
+                }
 
-				// Setup playersearch
+                // Setup playersearch
                 $oBungie->SearchDestinyPlayer($strGamertag);
-				
+                
                 // Save temp player array so we can filter these in the player search responses
                 $aTempPlayers[$strGamertag] = $iTempConsole;
             }
@@ -281,11 +281,11 @@ class CommandController
             foreach($aPlayersResults AS $strGamertag => $aFoundPlayers)
             {
                 if(empty($aFoundPlayers))
-				{
-					if($aTempPlayers[$strGamertag] == 4 || strpos($strGamertag, '#') !== false) $strGamertag = $this->formatNoBnet($strGamertag);
+                {
+                    if($aTempPlayers[$strGamertag] == 4 || strpos($strGamertag, '#') !== false) $strGamertag = $this->formatNoBnet($strGamertag);
                     throw new Exception('Player '. $strGamertag .' not found');
                 }
-				else
+                else
                 {
                     // Loop players in the response and filter out the right platform
                     $aPlayersTemp = [];
@@ -316,19 +316,19 @@ class CommandController
         return $aPlayers;
     }
 
-	private function formatToHashtag($strGamertag)
-	{
-		$iPos = strrpos($strGamertag, "-");
-		if($iPos !== false) $strGamertag = substr_replace($strGamertag, '#', $iPos, 1);
-		return $strGamertag;
-	}
-	
-	private function formatNoBnet($strGamertag)
-	{
-		$aGamertag = explode("#", $strGamertag);
-		if(count($aGamertag) > 1) $strGamertag =  str_replace("#". end($aGamertag), "", $strGamertag);
-		return $strGamertag;
-	}
+    private function formatToHashtag($strGamertag)
+    {
+        $iPos = strrpos($strGamertag, "-");
+        if($iPos !== false) $strGamertag = substr_replace($strGamertag, '#', $iPos, 1);
+        return $strGamertag;
+    }
+    
+    private function formatNoBnet($strGamertag)
+    {
+        $aGamertag = explode("#", $strGamertag);
+        if(count($aGamertag) > 1) $strGamertag =  str_replace("#". end($aGamertag), "", $strGamertag);
+        return $strGamertag;
+    }
 
     private function returnerino($res)
     {
