@@ -23,7 +23,6 @@ class TrialsReportFilter
             $aTeam = [];
             foreach($this->results AS $oPlayer)
             {
-                
                 if(!empty($oPlayer->activities))
                 {
                     $iGames = 0;
@@ -63,7 +62,7 @@ class TrialsReportFilter
             }
             return $aTeam;
         }
-        return false;
+        return array(false);
     }
 }
 ?>
