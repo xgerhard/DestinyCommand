@@ -14,6 +14,8 @@ use App\Destiny\Manifest;
 use App\Destiny\EquipmentItem;
 use App\Destiny\Stat;
 use App\Destiny\TrialsReportFireteamReport;
+use App\Destiny\DestinyPlayer;
+use App\Destiny\BungieNetAccount;
 
 use App\Providers\BungieProvider;
 
@@ -294,6 +296,24 @@ class CommandController
                         if(strtolower($oFoundPlayer->displayName) == strtolower($strGamertag) && ($oFoundPlayer->membershipType == $aTempPlayers[$strGamertag] || count($aFoundPlayers) == 1))
                         {
                             $aPlayersTemp[] = $oFoundPlayer;
+                        }
+
+                        // Save players for faster future searches
+                        if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId], ['membershipType', '=', $oFoundPlayer->membershipType]])->first())
+                        {
+                           if(strtolower($oDestinyPlayer->displayName) != strtolower($oFoundPlayer->displayName))
+                           {
+                               $oDestinyPlayer->displayName = $oFoundPlayer->displayName;
+                               $oDestinyPlayer->save();
+                           }
+                        }
+                        else
+                        {
+                            $oDestinyPlayer = new DestinyPlayer;
+                            $oDestinyPlayer->membershipId = $oFoundPlayer->membershipId;
+                            $oDestinyPlayer->membershipType = $oFoundPlayer->membershipType;
+                            $oDestinyPlayer->displayName = $oFoundPlayer->displayName;
+                            $oDestinyPlayer->save();
                         }
                     }
 
