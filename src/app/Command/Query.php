@@ -65,6 +65,7 @@ class Query
                     // You can specify a platform for each gamertag seperately, read them here and overwrite the overall platform
                     foreach($this->gamertags AS $i => $strGamertag)
                     {
+                        $strGamertag = str_replace("—", "--", $strGamertag); // Double dash fix discord
                         $aGamertag = explode(":", $strGamertag);
                         if(count($aGamertag == 2))
                         {
