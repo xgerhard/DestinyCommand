@@ -260,7 +260,6 @@ class Action
 
         // check alias again, since we removed the pga and c part
         $strAction = $this->getAlias($strAction);
-        if($strAction != "" && isset($aStatActions[$strAction]))
         $bMedal = false;
         if($strAction != "" && (isset($aStatActions[$strAction]) || isset($aStatMedals[$strAction])))
         {
