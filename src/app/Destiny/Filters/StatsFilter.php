@@ -11,7 +11,10 @@ class StatsFilter
 
     public function __construct($oStats)
     {
-        foreach($oStats AS $strPlaylist => $oPlaylist);
+        foreach($oStats AS $strPlaylist => $oPlaylist)
+        {
+            break;
+        }
 
         if(empty((array)$oPlaylist)) return false;
         $this->playlist = $strPlaylist;

@@ -24,7 +24,7 @@ class Action
         }
     }
 
-	private function isTrialsReportCommand($strAction)
+    private function isTrialsReportCommand($strAction)
     {
         $aTrialsReportActions = array(
             "trialsteam" => "getFireteam",
@@ -34,11 +34,11 @@ class Action
         if(isset($aTrialsReportActions[$strAction]))
         {
             return array(
-                'key'		=> 'TrialsTeam',
-                'title'		=> 'TrialsTeam',
-                'provider'	=> 'TrialsReportProvider',
-                'endpoint'	=> $aTrialsReportActions[$strAction],
-                'filter'	=> 'getFireteamStats'
+                'key' => 'TrialsTeam',
+                'title' => 'TrialsTeam',
+                'provider' => 'TrialsReportProvider',
+                'endpoint' => $aTrialsReportActions[$strAction],
+                'filter' => 'getFireteamStats'
             );
         }
         return false;
@@ -88,18 +88,18 @@ class Action
             if($c)
             {
                 return array(
-                    'key'       => $strTitle,
-                    'title'     => $strTitle,
-                    'provider'  => 'BungieProvider',
-                    'endpoint'  => 'profile',
-                    'filter'    => 'getCharacterEquipment',
-                    'options'   => (object) array(
-                        'perks'     => $bPerks,
-                        'params'    => array(
+                    'key' => $strTitle,
+                    'title' => $strTitle,
+                    'provider' => 'BungieProvider',
+                    'endpoint' => 'profile',
+                    'filter' => 'getCharacterEquipment',
+                    'options' => (object) array(
+                        'perks' => $bPerks,
+                        'params' => array(
                             'components' => array(205, 305, 300),
                         ),
-                        'latest'    => true,
-                        'field'     => $xField
+                        'latest' => true,
+                        'field' => $xField
                     )
                 );
             }
@@ -111,72 +111,118 @@ class Action
     {
         $c = false;
         $aStatActions = array(
-            'games'     => 'activitiesEntered',
-            'wins'      => 'activitiesWon',
-            'assists'   => 'assists',
-            'tdd'       => 'totalDeathDistance',
-            'avgdd'     => 'averageDeathDistance',
-            'tkd'       => 'totalKillDistance',
-            'avgkd'     => 'averageKillDistance',
-            'time'      => 'secondsPlayed',
-            'deaths'    => 'deaths',
-            'kills'    => 'kills',
-            'avgls'     => 'averageLifespan',
-            'score'     => 'score',
-            'avgspk'    => 'averageScorePerKill',
-            'avgspl'    => 'averageScorePerLife',
-            'mk'        => 'bestSingleGameKills',
+            'games' => 'activitiesEntered',
+            'wins' => 'activitiesWon',
+            'assists' => 'assists',
+            'tdd' => 'totalDeathDistance',
+            'avgdd' => 'averageDeathDistance',
+            'tkd' => 'totalKillDistance',
+            'avgkd' => 'averageKillDistance',
+            'time' => 'secondsPlayed',
+            'deaths' => 'deaths',
+            'kills' => 'kills',
+            'avgls' => 'averageLifespan',
+            'score' => 'score',
+            'avgspk' => 'averageScorePerKill',
+            'avgspl' => 'averageScorePerLife',
+            'mk' => 'bestSingleGameKills',
             'bestscore' => 'bestSingleGameScore',
-            'kd'        => 'killsDeathsRatio',
-            'kda'       => 'killsDeathsAssists',
-            'pkills'    => 'precisionKills',
-            'res'       => 'resurrectionsPerformed',
-            'resres'    => 'resurrectionsReceived',
-            'suicides'  => 'suicides',
-            'fusion'    => 'weaponKillsFusionRifle',
+            'kd' => 'killsDeathsRatio',
+            'kda' => 'killsDeathsAssists',
+            'pkills' => 'precisionKills',
+            'res' => 'resurrectionsPerformed',
+            'resres' => 'resurrectionsReceived',
+            'suicides' => 'suicides',
+            'fusion' => 'weaponKillsFusionRifle',
             'handcannon'=> 'weaponKillsHandCannon',
-            'auto'      => 'weaponKillsAutoRifle',
+            'auto' => 'weaponKillsAutoRifle',
             'machinegun'=> 'weaponKillsMachinegun',
-            'pulse'     => 'weaponKillsPulseRifle',
-            'rocket'    => 'weaponKillsRocketLauncher',
-            'scout'     => 'weaponKillsScoutRifle',
-            'shotgun'   => 'weaponKillsShotgun',
-            'sniper'    => 'weaponKillsSniper',
-            'smg'       => 'weaponKillsSubmachinegun',
-            'relic'     => 'weaponKillsRelic',
-            'sidearm'   => 'weaponKillsSideArm',
-            'sword'     => 'weaponKillsSword',
-            'akills'    => 'weaponKillsAbility',
-            'grenade'   => 'weaponKillsGrenade',
+            'pulse' => 'weaponKillsPulseRifle',
+            'rocket' => 'weaponKillsRocketLauncher',
+            'scout' => 'weaponKillsScoutRifle',
+            'shotgun' => 'weaponKillsShotgun',
+            'sniper' => 'weaponKillsSniper',
+            'smg' => 'weaponKillsSubmachinegun',
+            'relic' => 'weaponKillsRelic',
+            'sidearm' => 'weaponKillsSideArm',
+            'sword' => 'weaponKillsSword',
+            'akills' => 'weaponKillsAbility',
+            'grenade' => 'weaponKillsGrenade',
             'grenadelauncher' => 'weaponKillsGrenadeLauncher',
-            'bestwep'   => 'weaponBestType',
-            'wl'        => 'winLossRatio',
-            'lks'       => 'longestKillSpree',
-            'lsl'       => 'longestSingleLife',
-            'mpk'       => 'mostPrecisionKills',
-            'orbs'      => 'orbsDropped',
-            'orbsg'     => 'orbsGathered',
-            'cr'        => 'combatRating',
-            'fastest'   => 'fastestCompletionMs',
-            'lkd'       => 'longestKillDistance'
+            'bestwep' => 'weaponBestType',
+            'wl' => 'winLossRatio',
+            'lks' => 'longestKillSpree',
+            'lsl' => 'longestSingleLife',
+            'mpk' => 'mostPrecisionKills',
+            'orbs' => 'orbsDropped',
+            'orbsg' => 'orbsGathered',
+            'cr' => 'combatRating',
+            'fastest' => 'fastestCompletionMs',
+            'lkd' => 'longestKillDistance',
+        );
+        
+        $aStatMedals = array(
+            'hurricane' => 'medalAbilityFlowwalkerMulti',
+            'handfullofbullets' => 'medalAbilityGunslingerMulti',
+            'lethalinstinct' => 'medalAbilityGunslingerQuick',
+            'lightningstorm' => 'medalAbilityStormcallerMulti',
+            'bloodforblood' => 'medalAvenger',
+            'iliveherenow' => 'medalControlAdvantageHold',
+            'flagbearer' => 'medalControlMostAdvantage',
+            'gangsallhere' => 'medalCountdownRoundAllAlive',
+            'thecycle' => 'medalCycle',
+            'dodgethis' => 'medalDefeatHunterDodge',
+            'barricadebreaker' => 'medalDefeatTitanBrace',
+            'riftbreaker' => 'medalDefeatWarlockSigil',
+            'notonmywatch' => 'medalDefense',
+            'crushedthem' => 'medalMatchBlowout',
+            'fightme' => 'medalMatchMostDamage',
+            'timeandahalf' => 'medalMatchOvertime',
+            'undefeated' => 'medalMatchUndefeated',
+            'doubleplay' => 'medalMulti2x',
+            'tripleplay' => 'medalMulti3x',
+            'lightsout' => 'medalMulti4x',
+            'annihilation' => 'medalMultiEntireTeam',
+            'bestservedcold' => 'medalPayback',
+            'quickstrike' => 'medalQuickStrike',
+            'unyielding' => 'medalStreak10x',
+            'ruthless' => 'medalStreak5x',
+            'weranoutofmedals' => 'medalStreakAbsurd',
+            'combinedfire' => 'medalStreakCombined',
+            'shutdown' => 'medalStreakShutdown',
+            'wreckingcrew' => 'medalStreakTeam',
+            'notsofastmyfriend' => 'medalSuperShutdown',
+            'mycrestismyown' => 'medalSupremacyNeverCollected',
+            'safeandsecured' => 'medalSupremacySecureStreak',
+            'survivor' => 'medalSurvivalUndefeated',
+            'assaultspecialist' => 'medalWeaponAuto',
+            'coldfusion' => 'medalWeaponFusion',
+            'directhit' => 'medalWeaponGrenade',
+            'hawkeye' => 'medalWeaponHandCannon',
+            'lethalcadence' => 'medalWeaponPulse',
+            'splashdamage' => 'medalWeaponRocket',
+            'fieldscout' => 'medalWeaponScout',
+            'closeencounters' => 'medalWeaponShotgun',
+            'submachinist' => 'medalWeaponSmg',
+            'regent' => 'medalWeaponSword',
         );
 
         $aPlaylists = array(
-            'story'     => 2,
-            'strike'    => 3,
-            'raid'      => 4,
-            'pvp'       => 5,
-            'patrol'    => 6,
-            'pve'       => 7,
-            'control'   => 10,
-            'clash'     => 12,
+            'story' => 2,
+            'strike' => 3,
+            'raid' => 4,
+            'pvp' => 5,
+            'patrol' => 6,
+            'pve' => 7,
+            'control' => 10,
+            'clash' => 12,
             'nightfall' => 16,
-            'ib'        => 19,
+            'ib' => 19,
             'supremacy' => 31,
-            'survival'  => 37,
+            'survival' => 37,
             'countdown' => 38,
-            'trials'    => 39,
-            'social'    => 40
+            'trials' => 39,
+            'social' => 40
         );
 
         $iModes = 5; // default PvP.
@@ -215,8 +261,17 @@ class Action
         // check alias again, since we removed the pga and c part
         $strAction = $this->getAlias($strAction);
         if($strAction != "" && isset($aStatActions[$strAction]))
+        $bMedal = false;
+        if($strAction != "" && (isset($aStatActions[$strAction]) || isset($aStatMedals[$strAction])))
         {
-            $xStat = $aStatActions[$strAction];
+            if(isset($aStatActions[$strAction]))
+                $xStat = $aStatActions[$strAction];
+            else
+            {
+                $xStat = $aStatMedals[$strAction];
+                $bMedal = true;
+            }
+
             if(is_array($xStat))
             {
                 $strTitle = $strAction;
@@ -234,16 +289,17 @@ class Action
         if($c)
         {
             return array(
-                'key'       => $strTitle,
-                'title'     => "",
-                'provider'  => 'BungieProvider',
-                'endpoint'  => 'stats',
-                'filter'    => 'getHistoricalStats',
-                'options'   => (object) array(
-                    'field'     => $xField,
-                    'modes'     => $iModes,
-                    'seperate'  => $bSeperate,
-                    'pga'       => $bPGA
+                'key' => $strTitle,
+                'title' => "",
+                'provider' => 'BungieProvider',
+                'endpoint' => 'stats',
+                'filter' => 'getStats',
+                'options' => (object) array(
+                    'field' => $xField,
+                    'modes' => $iModes,
+                    'groups' => ($bMedal ? 'Medals' : 'General'),
+                    'seperate' => $bSeperate,
+                    'pga' => $bPGA
                 )
             );
         }

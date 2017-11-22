@@ -41,6 +41,11 @@ class BungieProvider
             break;
 
             case 'stats':
+
+                $aParams = [];
+                if(isset($oAction->options->modes)) $aParams['modes'] = $oAction->options->modes;
+                if(isset($oAction->options->groups)) $aParams['groups'] = $oAction->options->groups;
+
                 if($bPrepare === true)
                 {
                     if(isset($oAction->options->seperate) && $oAction->options->seperate === true)
@@ -56,7 +61,7 @@ class BungieProvider
                             foreach($oProfile->characters->data AS $oCharacter)
                             {
                                 $aCharacters[$oCharacter->characterId] = $oCharacter->classHash;
-                                $this->destiny->getHistoricalStats($oCharacter->membershipType, $oCharacter->membershipId, $oCharacter->characterId, ['modes' => $oAction->options->modes]);
+                                $this->destiny->getHistoricalStats($oCharacter->membershipType, $oCharacter->membershipId, $oCharacter->characterId, $aParams);
                             }
                         }
                         return $aCharacters;
@@ -65,7 +70,7 @@ class BungieProvider
                     {
                         foreach($aParameters['players'] AS $oPlayer)
                         {
-                            $this->destiny->getHistoricalStats($oPlayer->membershipType, $oPlayer->membershipId, 0, ['modes' => $oAction->options->modes]);
+                            $this->destiny->getHistoricalStats($oPlayer->membershipType, $oPlayer->membershipId, 0, $aParams);
                         }
                     }
                 }
@@ -77,7 +82,7 @@ class BungieProvider
                     {
                         $aIds = explode("-", $x);
                         $oStatsFilter = new StatsFilter($oStatsObject);
-                        $aRes[$aIds[0] .'-'. $aIds[1]][$aIds[2]] = $oStatsFilter->getStats($oAction->options->field);
+                        $aRes[$aIds[0] .'-'. $aIds[1]][$aIds[2]] = $oStatsFilter->{$oAction->filter}($oAction->options->field);
                     }
                     return $aRes;
                 }
