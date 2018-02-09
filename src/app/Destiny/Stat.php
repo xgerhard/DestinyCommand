@@ -59,6 +59,7 @@ class Stat
             'weaponKillsAbility' => 'ability kills',
             'weaponKillsGrenade' => 'grenade kills',
             'weaponKillsGrenadeLauncher' => 'grenade launcher kills',
+            'weaponKillsMelee' => 'melee kills',
             'weaponBestType' => 'best weapon type',
             'winLossRatio' => 'W/L',
             'longestKillSpree' => 'longest kill spree',
