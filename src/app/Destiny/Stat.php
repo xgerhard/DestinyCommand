@@ -47,6 +47,7 @@ class Stat
             'weaponKillsHandCannon' => 'handcannon kills',
             'weaponKillsAutoRifle' => 'auto rifle kills',
             'weaponKillsMachinegun' => 'machinegun kills',
+            'weaponKillsMelee' => 'melee kills',
             'weaponKillsPulseRifle' => 'pulse rifle kills',
             'weaponKillsRocketLauncher' => 'rocket launcher kills',
             'weaponKillsScoutRifle' => 'scout rifle kills',
