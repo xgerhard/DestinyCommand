@@ -67,7 +67,7 @@ class Query
                     {
                         $strGamertag = str_replace("—", "--", $strGamertag); // Double dash fix discord
                         $aGamertag = explode(":", $strGamertag);
-                        if(count($aGamertag == 2))
+                        if(count($aGamertag) == 2)
                         {
                             $this->gamertags[$i] = $aGamertag[0];
                             if(isset($aGamertag[1]) && in_array($aGamertag[1], array_keys($aConsoles))) $this->consoles[$i] = $aConsoles[$aGamertag[1]];
