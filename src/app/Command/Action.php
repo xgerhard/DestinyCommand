@@ -367,8 +367,8 @@ class Action
     private function isTextCommand($strAction)
     {
         $a = array(
-            'default_info' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com, for help @DestinyCommand on Twitter',
-            'help' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com, for help @DestinyCommand on Twitter',
+            'default_info' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com for help @DestinyCommand on Twitter',
+            'help' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com for help @DestinyCommand on Twitter',
             'commands' => 'Command list: destinycommand.com',
             'setplayer' => 'This feature will return with the full version later',
             'ratemybutt' => $this->RateMyButt(),
