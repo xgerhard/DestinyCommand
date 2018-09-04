@@ -283,6 +283,8 @@ class Action
             'countdown' => 38,
             'trials' => 39,
             'social' => 40,
+            'rumble' => 48,
+            'doubles' => 50,
             'gambit' => 63
         );
 
