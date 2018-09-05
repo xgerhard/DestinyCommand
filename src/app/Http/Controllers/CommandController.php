@@ -16,6 +16,7 @@ use App\Destiny\Stat;
 use App\Destiny\TrialsReportFireteamReport;
 use App\Destiny\DestinyPlayer;
 use App\Destiny\BungieNetAccount;
+use App\Destiny\CharacterProfileValue;
 
 use App\Providers\BungieProvider;
 
@@ -144,6 +145,13 @@ class CommandController
                                         case $x instanceof Stat:
                                             $oStat = $x;
                                             $strCharacterRes .= $oStat->title .': '. $oStat->displayValue;
+                                            $strCharacterRes .= ", ";
+                                            $bFound = true;
+                                        break;
+
+                                        case $x instanceof CharacterProfileValue:
+                                            $oCharacterProfile = $x;
+                                            $strCharacterRes .= $aClasses[$oCharacterProfile->classHash] .': '. $oCharacterProfile->title .': '. $oCharacterProfile->displayValue;
                                             $strCharacterRes .= ", ";
                                             $bFound = true;
                                         break;

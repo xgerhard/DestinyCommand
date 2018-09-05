@@ -7,7 +7,7 @@ class Action
     {
         $aAction = false;
         $strAction = $this->getAlias($strAction);
-        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isGearCommand", "isStatCommand");
+        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isGearCommand", "isCharacterProfileCommand", "isStatCommand");
         foreach($aFunctions AS $strFunction)
         {
             $aAction = $this->{$strFunction}($strAction);
@@ -22,6 +22,28 @@ class Action
         {
             $this->$k = $v;
         }
+    }
+
+    private function isCharacterProfileCommand($strAction)
+    {
+        $aCharacterProfileActions = array(
+            "powerlevel" => 'light'
+        );
+
+        if(isset($aCharacterProfileActions[$strAction]))
+        {
+            return array(
+                'key' => $strAction,
+                'title' => "",
+                'provider' => 'BungieProvider',
+                'endpoint' => 'profile',
+                'filter' => 'getCharacterProfileValue',
+                'options' => (object) array(
+                    'field' => $aCharacterProfileActions[$strAction]
+                )
+            );
+        }
+        return false;
     }
 
     private function isTrialsReportCommand($strAction)
@@ -414,7 +436,10 @@ class Action
             'combatrating' => 'cr',
             'winloss' => 'wl',
             'mostkills' => 'mk',
-            'nade' => 'grenade'
+            'nade' => 'grenade',
+            'powerlvl' => 'powerlevel',
+            'light' => 'powerlevel',
+            'pwrlvl' => 'powerlevel'
         );
         return isset($a[$strAction]) ? $a[$strAction] : $strAction;
     }

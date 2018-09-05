@@ -2,6 +2,7 @@
 namespace App\Destiny;
 
 use App\Destiny\Filters\InventoryFilter;
+use App\Destiny\CharacterProfileValue;
 
 class Profile
 {
@@ -11,6 +12,19 @@ class Profile
         {
             $this->$strProperty = $oProperty;
         }
+    }
+
+    function getCharacterProfileValue($oOptions)
+    {   
+        $aRes = [];
+        if(isset($oOptions->field))
+        {
+            foreach($this->characters->data AS $iCharacterId => $oCharacter)
+            {
+                $aRes[$iCharacterId][$oOptions->field] = new CharacterProfileValue($oOptions->field, $oCharacter->{$oOptions->field}, $oCharacter->classHash);
+            }
+        }
+        return $aRes;
     }
 
     function getCharacterEquipment($oOptions)
