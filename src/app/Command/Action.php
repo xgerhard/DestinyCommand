@@ -304,7 +304,10 @@ class Action
             'survival' => 37,
             'countdown' => 38,
             'trials' => 39,
-            'social' => 40
+            'social' => 40,
+            'rumble' => 48,
+            'doubles' => 50,
+            'gambit' => 63
         );
 
         $iModes = 5; // default PvP.
