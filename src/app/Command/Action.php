@@ -26,6 +26,11 @@ class Action
 
     private function isCharacterProfileCommand($strAction)
     {
+        if(isset($strAction[0]) && $strAction[0] == 'c' && strlen($strAction) > 2)
+        {
+            $strAction = substr($strAction, 1);
+        }
+ 
         $aCharacterProfileActions = array(
             "powerlevel" => 'light'
         );
