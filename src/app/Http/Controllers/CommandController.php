@@ -172,7 +172,11 @@ class CommandController
                                 {
                                     if(isset($oStat) && $bPlaylistIntro === false)
                                     {
-                                        if(substr($oStat->playlist, 0, 3) == 'all') $oStat->playlist = substr($oStat->playlist, 3);
+                                        if(substr($oStat->playlist, 0, 3) == 'all')
+                                            $oStat->playlist = substr($oStat->playlist, 3);
+                                        elseif($oStat->playlist == 'pvecomp_gambit')
+                                            $oStat->playlist = 'Gambit';
+
                                         $strRes .= '['. ucfirst($oStat->playlist) .'] ';
                                         $bPlaylistIntro = true;
                                     }
@@ -307,7 +311,7 @@ class CommandController
                         }
 
                         // Save players for faster future searches
-                        if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId], ['membershipType', '=', $oFoundPlayer->membershipType]])->first())
+                        /*if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId], ['membershipType', '=', $oFoundPlayer->membershipType]])->first())
                         {
                            if(strtolower($oDestinyPlayer->displayName) != strtolower($oFoundPlayer->displayName))
                            {
@@ -322,7 +326,7 @@ class CommandController
                             $oDestinyPlayer->membershipType = $oFoundPlayer->membershipType;
                             $oDestinyPlayer->displayName = $oFoundPlayer->displayName;
                             $oDestinyPlayer->save();
-                        }
+                        }*/
                     }
 
                     // Jet the pirate will thank me later, thanks Vlad ;) 

@@ -187,6 +187,27 @@ class Action
             'cr' => 'combatRating',
             'fastest' => 'fastestCompletionMs',
             'lkd' => 'longestKillDistance',
+            'invasions' => 'invasions',
+            'invasionkills' => 'invasionKills',
+            'invaderkills' => 'invaderKills',
+            'invaderdeaths' => 'invaderDeaths',
+            'primevalkills' => 'primevalKills',
+            'blockerkills' => 'blockerKills',
+            'mobkills' => 'mobKills',
+            'highvaluekills' => 'highValueKills',
+            'motespickedup' => 'motesPickedUp',
+            'motesdeposited' => 'motesDeposited',
+            'motesdenied' => 'motesDenied',
+            'motesdegraded' => 'motesDegraded',
+            'moteslost' => 'motesLost',
+            'bankoverage' => 'bankOverage',
+            'smallblockers' => 'smallBlockersSent',
+            'mediumblockers' => 'mediumBlockersSent',
+            'largeblockers' => 'largeBlockersSent',
+            'primevaldamage' => 'primevalDamage',
+            'primevalhealing' => 'primevalHealing',
+            'gbroundsplayed' => 'roundsPlayed',
+            'gbroundswon' => 'roundsWon'
         );
         
         $aStatMedals = array(
@@ -319,19 +340,50 @@ class Action
         $bPGA = false; // default false.
         $bSeperate = false; // default false.
 
-        foreach($aPlaylists AS $strPlaylist => $iPlaylistModes)
-        {
-            if(strpos($strAction, $strPlaylist) !== false)
-            {
-                $iModes = $iPlaylistModes;
-                $strAction = str_replace($strPlaylist, "", $strAction);
+        $aGambitStats = array(
+            'invasions',
+            'invasionkills',
+            'invaderkills',
+            'invaderdeaths',
+            'primevalkills',
+            'blockerkills' ,
+            'mobkills',
+            'highvaluekills',
+            'motespickedup',
+            'motesdeposited',
+            'motesdenied',
+            'motesdegraded' ,
+            'moteslost',
+            'bankoverage',
+            'smallblockers',
+            'mediumblockers',
+            'largeblockers',
+            'primevaldamage',
+            'primevalhealing',
+            'gbroundsplayed',
+            'gbroundswon'
+        );
 
-                if($strAction == '' || $strAction == 'c')
+        if(in_array($strAction, $aGambitStats) || in_array(substr($strAction, 1), $aGambitStats))
+        {
+            $iModes = 63; // These stats only will work for Gambit
+        }
+        else
+        {
+            foreach($aPlaylists AS $strPlaylist => $iPlaylistModes)
+            {
+                if(strpos($strAction, $strPlaylist) !== false)
                 {
-                    $c = true;
-                    $xField = array('killsDeathsRatio', 'winLossRatio', 'activitiesWon');
-                    $strTitle = 'summary';
-                    break;
+                    $iModes = $iPlaylistModes;
+                    $strAction = str_replace($strPlaylist, "", $strAction);
+
+                    if($strAction == '' || $strAction == 'c')
+                    {
+                        $c = true;
+                        $xField = array('killsDeathsRatio', 'winLossRatio', 'activitiesWon');
+                        $strTitle = 'summary';
+                        break;
+                    }
                 }
             }
         }
