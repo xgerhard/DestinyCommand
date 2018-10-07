@@ -25,10 +25,31 @@ class EquipmentItem
             {
                 foreach($aSockets AS $oSocket)
                 {
-                    if($oSocket->isEnabled != false)
+                    if($oSocket->isEnabled && $oSocket->isVisible)
                     {
                         $oPlug = $oManifest->getDefinition('InventoryItem', $oSocket->plugHash);
-                        if($oPlug->inventory->bucketTypeHash == 1469714392 || $oPlug->inventory->bucketTypeHash == 3313201758) $this->perks[] = $oPlug->displayProperties->name; // Only show perks + mod
+
+                        // Show progress if tracker is enabled
+                        if(isset($oSocket->plugObjectives[0]) && $oSocket->plugObjectives[0]->visible)
+                        {
+                            $oObjective = $oManifest->getDefinition('Objective', $oSocket->plugObjectives[0]->objectiveHash);
+                            if(isset($oObjective->progressDescription) && trim($oObjective->progressDescription) != "")
+                            {
+                                $oPlug->displayProperties->name .= ' ('. $oObjective->progressDescription .': '. $oSocket->plugObjectives[0]->progress .')';
+                            }
+                        }
+
+                        // Show tier upgrade type
+                        if(strpos($oPlug->displayProperties->name, 'Tier ') !== false && isset($oPlug->investmentStats[0])){
+                            $oStat = $oManifest->getDefinition('Stat', $oPlug->investmentStats[0]->statTypeHash);
+                            if(isset($oStat->displayProperties->name)) $oPlug->displayProperties->name = 'Tier '. $oPlug->investmentStats[0]->value .' ('. $oStat->displayProperties->name .')';
+                        }
+
+                        // Only show perks + mods
+                        if($oPlug->inventory->bucketTypeHash == 1469714392 || $oPlug->inventory->bucketTypeHash == 3313201758 || $oPlug->inventory->bucketTypeHash == 2422292810)
+                        {
+                            $this->perks[] = $oPlug->displayProperties->name;
+                        }
                     }
                 }
             }
