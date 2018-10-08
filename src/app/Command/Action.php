@@ -30,7 +30,7 @@ class Action
         {
             $strAction = substr($strAction, 1);
         }
- 
+
         $aCharacterProfileActions = array(
             "powerlevel" => 'light'
         );
@@ -91,7 +91,7 @@ class Action
             'legs',
             'chest',
             'weapons' => array('primary', 'secondary', 'heavy'),
-            'gear' => array('helmet', 'chest', 'legs')
+            'gear' => array('helmet', 'gauntlet', 'chest', 'legs')
         );
 
         foreach($aItemActions AS $xKey => $xItemAction)
@@ -211,7 +211,7 @@ class Action
             'gbroundsplayed' => 'roundsPlayed',
             'gbroundswon' => 'roundsWon'
         );
-        
+
         $aStatMedals = array(
             'hurricane' => 'medalAbilityFlowwalkerMulti',
             'handfullofbullets' => 'medalAbilityGunslingerMulti',
@@ -540,6 +540,7 @@ class Action
             'trialsmap' => '\'Trialsmap\' command is in development',
             'nightfall' => '\'Nightfall\' command is in development',
             'elo' => '\'ELO\' command is in development',
+            'donate' => 'If you like the !destiny command and want to support: https://2g.be/u/donate (This money does NOT go to the streamer)'
         );
 
         if(isset($a[$strAction]))
