@@ -76,6 +76,14 @@ class CommandController
                 $oCommand->setToken(Input::get('token'));
             }
 
+            // Dont display username
+            $bUsername = true;
+            if(Input::has('nousername')) $bUsername = false;
+
+            // Dont display gamertag
+            $bGamertag = true;
+            if(Input::has('nogamertag')) $bGamertag = false;
+
             $oCommand->setDefaultConsole(Input::get('default_console', 'xbox'));
             $oCommand->setResponseUser(Input::get('response_user', ''));
 
@@ -93,7 +101,7 @@ class CommandController
             }
 
             // Leading @ to tag users in Twitch chat.
-            $strRes = '@' .$this->command->responseUser .': ';
+            $strRes = $bUsername ? '@' .$this->command->responseUser .': ' : '';
 
             // This shouldnt be here.
             $aClasses = array(
@@ -117,7 +125,7 @@ class CommandController
                         if(isset($aRes['response'][$strKey]))
                         {
                             $bPlaylistIntro = false;
-                            $strRes .= ($oPlayer->membershipType == 4 ? $this->formatNoBnet($oPlayer->displayName) : $oPlayer->displayName) .': ';
+                            $strRes .= $bGamertag ? (($oPlayer->membershipType == 4 ? $this->formatNoBnet($oPlayer->displayName) : $oPlayer->displayName) .': ') : '';
                             if(count($aRes['response'][$strKey]) > 1) $strRes .= '[';
                             $bFound = false;
 
