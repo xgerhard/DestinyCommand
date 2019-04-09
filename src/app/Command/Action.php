@@ -376,7 +376,9 @@ class Action
             'social' => 40,
             'rumble' => 48,
             'doubles' => 50,
-            'gambit' => 63
+            'gambit' => 63,
+            'gambitprime' => 75,
+            'gbp' => 75
         );
 
         $iModes = 5; // default PvP.
