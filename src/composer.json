@@ -15,7 +15,8 @@
         "php": "^7.0",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "xgerhard/nbheaders": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -52,6 +53,12 @@
             "php artisan optimize"
         ]
     },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/xgerhard/nbheaders.git"
+        }
+    ],
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,

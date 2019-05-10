@@ -5,7 +5,7 @@ use App\OAuth\OAuthHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use App\Command;
-
+use App\Setplayer;
 
 use App\Destiny\DestinyClient;
 use App\Destiny\Filters\InventoryFilter;
@@ -236,7 +236,15 @@ class CommandController
         if($this->command->query->reqUser === true)
         {
             $aPlayers = $this->getPlayers();
-            if(empty($aPlayers)) throw new Exception('No players found');
+            if(empty($aPlayers)) 
+            {
+                $oSetplayer = new Setplayer;
+                $oUserPlayer = $oSetplayer->getPlayer();
+                if($oUserPlayer)
+                    $aPlayers[$oUserPlayer->destinyPlayer->displayName] = $oUserPlayer->destinyPlayer;
+                else
+                    throw new Exception('No players found');
+            }
         }
 
         // Since were using multiCurl were looping the actions twice, first time to setup the needed request, so we can perform them all at once. Second loop we can read the responses.
@@ -247,8 +255,29 @@ class CommandController
             if(!isset(${$oAction->provider})) ${$oAction->provider} = (new $strClass);
             $this->prep = ${$oAction->provider}->fetch($oAction, array('players' => $aPlayers), true);
         }
+
         foreach($this->command->query->actions AS $oAction)
         {
+            // Handle setplayer feature here
+            if($oAction->key == 'setplayer')
+            {
+                $aPlayers = $this->getPlayers();
+                if(empty($aPlayers))
+                    $oAction->text = 'No player info provided';
+                else
+                {
+                    // Loop once to get the first player
+                    foreach($aPlayers AS $oPlayer){ break; }
+                    $aConsoles = [1 => "Xbox", 2 => "PS", 4 => "PC"];
+                    $oSetplayer = new Setplayer;
+
+                    if($oSetplayer->setPlayer($oPlayer))
+                        $oAction->text = 'Succesfully saved player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']';
+                    else
+                        $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']';
+                }
+            }
+
             $x = $oAction->provider == 'plain_text' ? ['text' => [$oAction->text]] : ${$oAction->provider}->fetch($oAction, array('players' => $aPlayers), false);
             if(is_array($x))
                 $aResponse = $this->MergeArrays($aResponse, $x);
@@ -315,13 +344,8 @@ class CommandController
                     $aPlayersTemp = [];
                     foreach($aFoundPlayers AS $oFoundPlayer)
                     {
-                        if(strtolower($oFoundPlayer->displayName) == strtolower($strGamertag) && ($oFoundPlayer->membershipType == $aTempPlayers[$strGamertag] || count($aFoundPlayers) == 1))
-                        {
-                            $aPlayersTemp[] = $oFoundPlayer;
-                        }
-
                         // Save players for faster future searches
-                        /*if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId], ['membershipType', '=', $oFoundPlayer->membershipType]])->first())
+                        if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId], ['membershipType', '=', $oFoundPlayer->membershipType]])->first())
                         {
                            if(strtolower($oDestinyPlayer->displayName) != strtolower($oFoundPlayer->displayName))
                            {
@@ -336,7 +360,12 @@ class CommandController
                             $oDestinyPlayer->membershipType = $oFoundPlayer->membershipType;
                             $oDestinyPlayer->displayName = $oFoundPlayer->displayName;
                             $oDestinyPlayer->save();
-                        }*/
+                        }
+
+                        if(strtolower($oDestinyPlayer->displayName) == strtolower($strGamertag) && ($oDestinyPlayer->membershipType == $aTempPlayers[$strGamertag] || count($aFoundPlayers) == 1))
+                        {
+                            $aPlayersTemp[] = $oDestinyPlayer;
+                        }
                     }
 
                     // Jet the pirate will thank me later, thanks Vlad ;) 
