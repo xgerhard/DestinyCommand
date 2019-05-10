@@ -100,6 +100,9 @@ class CommandController
                 die;
             }
 
+            // Format Discord
+            if($this->command->platform == 'discord' && isset($this->command->responseUser)) $this->command->responseUser = $this->formatDiscord($this->command->responseUser);
+            
             // Leading @ to tag users in Twitch chat.
             $strRes = $bUsername ? '@' .$this->command->responseUser .': ' : '';
 
@@ -227,6 +230,13 @@ class CommandController
         return $Arr1;
     }
 
+    private function formatDiscord($strName)
+    {
+        $aDiscordFormats = array("_", "*", "+");
+        $aDiscordReplace = array("\_", "\*", " ");
+        return str_replace($aDiscordFormats, $aDiscordReplace, $strName);
+    }
+
     private function runCommand()
     {
         $aPlayers = [];
@@ -274,7 +284,7 @@ class CommandController
                     if($oSetplayer->setPlayer($oPlayer))
                         $oAction->text = 'Succesfully saved player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']';
                     else
-                        $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']';
+                        $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']. Note: setplayer is a Nightbot only feature';
                 }
             }
 
