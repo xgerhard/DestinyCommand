@@ -25,10 +25,10 @@ class DestinyClient
         );
     }
 
-    public function getProfile($iMembershipType, $iMembershipId, $aComponents = array())
+    public function getProfile($iMembershipType, $iMembershipId, $aComponents = [])
     {
         $this->r->addRequest(
-            new DestinyRequest('/Platform/Destiny2/'. $iMembershipType .'/Profile/'. $iMembershipId .'/', ['components' => implode(",", $aComponents)], 0),
+            new DestinyRequest('/Platform/Destiny2/'. $iMembershipType .'/Profile/'. $iMembershipId .'/', ['components' => implode(',', $aComponents)], 0),
             'getProfile',
             $iMembershipType .'-'. $iMembershipId
         );
@@ -49,6 +49,15 @@ class DestinyClient
             new DestinyRequest('/Platform/Destiny2/'. $iMembershipType .'/Account/'. $iMembershipId .'/Character/'. $iCharacterId .'/Stats/', $aParams),
             'getHistoricalStats',
             $iMembershipType .'-'. $iMembershipId .'-'. $iCharacterId
+        );
+    }
+
+    public function getPublicVendors($aComponents = [])
+    {
+        $this->r->addRequest(
+            new DestinyRequest('/Platform/Destiny2/Vendors/', ['components' => implode(',', $aComponents)], 0),
+            'getPublicVendors',
+            'getPublicVendors'
         );
     }
 

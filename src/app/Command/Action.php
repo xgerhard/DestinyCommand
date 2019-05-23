@@ -7,7 +7,7 @@ class Action
     {
         $aAction = false;
         $strAction = $this->getAlias($strAction);
-        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isGearCommand", "isCharacterProfileCommand", "isStatCommand");
+        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isVendorCommand", "isGearCommand", "isCharacterProfileCommand", "isStatCommand");
         foreach($aFunctions AS $strFunction)
         {
             $aAction = $this->{$strFunction}($strAction);
@@ -22,6 +22,33 @@ class Action
         {
             $this->$k = $v;
         }
+    }
+
+    private function isVendorCommand($strAction)
+    {
+        // vendor => hash
+        $aVendorActions = [
+            'xur' => 2190858386
+        ];
+
+        if(isset($aVendorActions[$strAction]))
+        {
+            return [
+                'key' => $strAction,
+                'title' => $strAction,
+                'provider' => 'BungieProvider',
+                'endpoint' => 'vendor',
+                'filter' => 'getVendorSales',
+                'noUser' => true,
+                'options' => (object) [
+                    'params' => [
+                        'components' => [400, 402],
+                    ],
+                    'hash' => $aVendorActions[$strAction]
+                ]
+            ];
+        }
+        return false;
     }
 
     private function isCharacterProfileCommand($strAction)
@@ -538,7 +565,6 @@ class Action
             'commands' => 'Command list: destinycommand.com',
             'setplayer' => 'This feature will return with the full version later',
             'ratemybutt' => $this->RateMyButt(),
-            'xur' => 'This command will return when Xur data is available in the Bungie API',
             'trialsmap' => '\'Trialsmap\' command is in development',
             'nightfall' => '\'Nightfall\' command is in development',
             'elo' => '\'ELO\' command is in development',

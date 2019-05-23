@@ -1,9 +1,11 @@
 <?php
 namespace App\Providers;
 
+use Cache;
 use App\Destiny\DestinyClient;
 use App\Destiny\Profile;
 use App\Destiny\Filters\StatsFilter;
+use App\Destiny\Vendor;
 
 class BungieProvider
 {
@@ -16,6 +18,31 @@ class BungieProvider
     {
         switch($oAction->endpoint)
         {
+            case 'vendor':
+
+                $strCacheKey = 'vendor-'. $oAction->options->hash;
+                $bCache = Cache::has($strCacheKey);
+
+                if($bPrepare === true)
+                {
+                    if(!$bCache)
+                        $this->destiny->getPublicVendors($oAction->options->params['components'] ?? []);
+                }
+                else
+                {
+                    if(!$bCache)
+                    {
+                        $oVendors = $this->destiny->get('getPublicVendors')['getPublicVendors'];
+                        //$oVendor = new Vendor;
+                        //$aResponse = $oVendor->{$oAction->filter}($oAction->options);
+                        //Cache::put($strCacheKey, $aResponse, $nextTimeXur);
+                        //return $aResponse;
+                    }
+                    else
+                        return Cache::get($strCacheKey);
+                }
+            break;
+
             case 'profile':
 
                 if($bPrepare === true)
