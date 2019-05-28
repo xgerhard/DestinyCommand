@@ -2,7 +2,7 @@
 
 namespace App\Destiny;
 
-use App\Destiny\Equipmentitem;
+use App\Destiny\EquipmentItem;
 
 class Vendor
 {
