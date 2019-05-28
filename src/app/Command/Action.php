@@ -38,7 +38,7 @@ class Action
                 'title' => $strAction,
                 'provider' => 'BungieProvider',
                 'endpoint' => 'vendor',
-                'filter' => 'getVendorSales',
+                'filter' => 'getSales',
                 'noUser' => true,
                 'options' => (object) [
                     'params' => [

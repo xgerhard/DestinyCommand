@@ -204,10 +204,47 @@ class CommandController
                 }
                 $strRes = substr($strRes, 0, -2);
             }
-            if(isset($aRes['response']['text']))
+
+            elseif(!isset($aRes['response']['text']) && !empty($aRes['response']) && is_array($aRes['response']) && !empty($aRes['response']))
             {
+                if(isset($aRes['response']['textStart']))
+                    $strRes .= $aRes['response']['textStart'];
+
+                foreach($aRes['response'] as $x)
+                {
+                    switch(true)
+                    {
+                        case $x instanceof EquipmentItem:
+                            // Name, light/power, perks
+                            $strRes .= $x->name;
+                            if(isset($x->light) && $x->light > 50)
+                                $strRes .= ' ['. $x->light .']';
+                            if(isset($x->perks) && !empty($x->perks))
+                                $strRes .= ' ['. implode(", ", $x->perks) .']';
+
+                            // Item costs for vendors
+                            if(isset($x->costs) && !empty($x->costs))
+                            {
+                                $strRes .= ' [';
+                                foreach($x->costs as $oCost)
+                                {
+                                    $strRes .= $oCost->quantity .', ';
+                                }
+                                $strRes = substr($strRes, 0, -2). ']';
+                            }
+                            $strRes .= ', ';
+                        break;
+                    }
+                }
+                $strRes = substr($strRes, 0, -2);
+
+                if(isset($aRes['response']['textEnd']))
+                    $strRes .= ' ['. $aRes['response']['textEnd'] .']';
+           }
+
+            if(isset($aRes['response']['text']))
                 $strRes .= ' '. implode(",", $aRes['response']['text']);
-            }
+
             $strRes .= '.';
             if($this->command->platform == 'discord') $strRes .= '```';
             return $strRes;

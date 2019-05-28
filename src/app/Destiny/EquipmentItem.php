@@ -7,17 +7,19 @@ class EquipmentItem
 {
     public function __construct($oEquipmentItem)
     {
-        $this->itemInstanceId = $oEquipmentItem->itemInstanceId;
+        $this->itemInstanceId = $oEquipmentItem->itemInstanceId ?? 0;
         $this->itemHash = $oEquipmentItem->itemHash;
     }
 
-    public function load($oItemInstance, $aSockets = array(), $bPerks)
+    public function load($oItemInstance, $aSockets = [], $bPerks)
     {
         $oManifest = new Manifest;
         $oItem = $oManifest->getDefinition('InventoryItem', $this->itemHash);
 
         $this->name = $oItem->displayProperties->name;
+        $this->bucketTypeHash = $oItem->inventory->bucketTypeHash ?? 0;
         $this->light = $oItemInstance->primaryStat->value ?? 0;
+        $this->quantity = $oItemInstance->quantity ?? 1;
 
         if($bPerks && !$oItem->redacted)
         {
@@ -54,6 +56,20 @@ class EquipmentItem
                     }
                 }
             }
+        }
+
+        // Vendor items costs
+        if(isset($oItemInstance->costs) && !empty($oItemInstance->costs))
+        {
+            $aCosts = [];
+            foreach($oItemInstance->costs as $oCost)
+            {
+                $oCostItem = new EquipmentItem($oCost);
+                $oCostItem->load($oCost, [], false);
+                unset($oCostItem->itemInstanceId, $oCostItem->bucketTypeHash, $oCostItem->light);
+                $aCosts[] = $oCostItem;
+            }
+            $this->costs = $aCosts;
         }
     }
 }
