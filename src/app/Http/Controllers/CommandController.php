@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
+use Cache;
+use Carbon\Carbon;
 use App\OAuth\OAuthHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -324,6 +326,21 @@ class CommandController
                         $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']. Note: setplayer is a Nightbot only feature';
                 }
             }
+            elseif($oAction->key == 'setxur')
+            {
+                if($this->isModerator())
+                {
+                    $strLocation = $this->getTextFromQuery();
+                    if(!$strLocation)
+                        $oAction->text = 'No location info provided';
+                    else
+                    {
+                        Cache::put('xur-location', $strLocation, Carbon::parse('next friday 17:00:00'));
+                        $oAction->text = 'Successfully saved Xur location';
+                    }
+                }
+                else $oAction->text = 'Not allowed to set Xur location';
+            }
 
             $x = $oAction->provider == 'plain_text' ? ['text' => [$oAction->text]] : ${$oAction->provider}->fetch($oAction, array('players' => $aPlayers), false);
             if(is_array($x))
@@ -335,6 +352,23 @@ class CommandController
             'players' => $aPlayers,
             'response' => $aResponse
         );
+    }
+
+    public function isModerator()
+    {
+        $aModeratorKeys = explode(';', ENV('MODERATOR_KEYS'));
+        $strUserKey = sha1($this->command->user . $this->command->channel . $this->command->token);
+        return in_array($strUserKey, $aModeratorKeys);
+    }
+
+    public function getTextFromQuery()
+    {
+        // Some commands need the plain text given by the user, rather than gamertags
+        $s = '';
+        if(isset($this->command->query->gamertags[0]))
+            $s = trim($this->command->query->gamertags[0]);
+ 
+        return $s == '' ? false : $s;
     }
 
     public function getPlayers()

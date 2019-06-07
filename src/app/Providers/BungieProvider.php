@@ -42,14 +42,21 @@ class BungieProvider
                         if(!empty($aResponse))
                         {
                             $aResponse['textStart'] = 'Xur is selling: ';
-                            $aResponse['textEnd'] = 'Expires: '. $oRefresh->format('M jS');
+                            $aResponse['textEnd'] = 'Inventory reset: '. $oRefresh->format('M jS');
 
                             Cache::put($strCacheKey, $aResponse, $oRefresh);
+                            Cache::forget('xur-location');
                             return $aResponse;
                         }
                     }
                     else
-                        return Cache::get($strCacheKey);
+                    {
+                        $aResponse = Cache::get($strCacheKey);
+                        if(Cache::has('xur-location'))
+                            $aResponse['textStart'] = 'Xur is located at: '. Cache::get('xur-location') .'. He is selling: ';
+
+                        return $aResponse;
+                    }
                 }
             break;
 
