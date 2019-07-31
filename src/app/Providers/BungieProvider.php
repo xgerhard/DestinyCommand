@@ -31,6 +31,12 @@ class BungieProvider
                 }
                 else
                 {
+                    // Xur date: Friday 17:00 - Tuesday 17:00
+                    $bXurHere = false;
+                    $oCurrDate = new Carbon();
+                    if(in_array($oCurrDate->day, [6, 0, 1]) || ($oCurrDate->day == 5 && $oCurrData->hour >= 17) || ($oCurrDate->day == 2 && $oCurrData->hour < 17))
+                        $bXurHere = true;
+
                     if(!$bCache)
                     {
                         $oVendors = $this->destiny->get('getPublicVendors')['getPublicVendors'];
@@ -42,7 +48,7 @@ class BungieProvider
                         if(!empty($aResponse))
                         {
                             $aResponse['textStart'] = 'Xur is selling: ';
-                            $aResponse['textEnd'] = 'Inventory reset: '. $oRefresh->format('M jS');
+                            $aResponse['textEnd'] = 'New inventory: '. $oRefresh->format('M jS');
 
                             Cache::put($strCacheKey, $aResponse, $oRefresh);
                             Cache::forget('xur-location');
@@ -52,8 +58,11 @@ class BungieProvider
                     else
                     {
                         $aResponse = Cache::get($strCacheKey);
-                        if(Cache::has('xur-location'))
+                        if(Cache::has('xur-location') && $bXurHere)
                             $aResponse['textStart'] = 'Xur is located at: '. Cache::get('xur-location') .'. He is selling: ';
+
+                        if(!$bXurHere)
+                            $aResponse['textStart'] = str_replace('is', 'was', $aResponse['textStart']);
 
                         return $aResponse;
                     }
