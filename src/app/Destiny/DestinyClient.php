@@ -34,6 +34,15 @@ class DestinyClient
         );
     }
 
+    public function getLinkedProfiles($iMembershipType, $iMembershipId)
+    {
+        $this->r->addRequest(
+            new DestinyRequest('/Platform/Destiny2/'. $iMembershipType .'/Profile/'. $iMembershipId .'/LinkedProfiles/', [], 0),
+            'getLinkedProfiles',
+            $iMembershipType .'-'. $iMembershipId
+        );
+    }
+
     public function getDestinyManifest($strDatabase = false)
     {
         $this->r->addRequest(
