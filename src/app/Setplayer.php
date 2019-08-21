@@ -32,6 +32,32 @@ class Setplayer
         return false;
     }
 
+    public function setAccount($oBungieNetAccount)
+    {
+        if($this->user)
+        {
+            $oUserPlayer = $this->getPlayer();
+            if($oUserPlayer)
+            {
+                if($oUserPlayer->BungieNetAccount->membershipId != $oBungieNetAccount->membershipId)
+                {
+                    $oUserPlayer->bungieNetAccountId = $oBungieNetAccount->id;
+                    $oUserPlayer->save();
+                }
+            }
+            else
+            {
+                $oUserPlayer = new UserPlayer;
+                $oUserPlayer->provider = $this->user->provider;
+                $oUserPlayer->providerId = $this->user->providerId;
+                $oUserPlayer->bungieNetAccountId = $oBungieNetAccount->id;
+                $oUserPlayer->save(); 
+            }
+            return $oUserPlayer;
+        }
+        return false;
+    }
+
     public function setPlayer($oDestinyPlayer)
     {
         if($this->user)

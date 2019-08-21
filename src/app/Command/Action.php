@@ -564,6 +564,7 @@ class Action
             'help' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com for help @DestinyCommand on Twitter',
             'commands' => 'Command list: destinycommand.com',
             'setplayer' => 'x',
+            'setaccount' => 'x',
             'setxur' => 'x',
             'ratemybutt' => $this->RateMyButt(),
             'trialsmap' => '\'Trialsmap\' command is in development',

@@ -25,6 +25,15 @@ class DestinyClient
         );
     }
 
+    public function searchUsers($strUser)
+    {
+        $this->r->addRequest(
+            new DestinyRequest('/Platform/User/SearchUsers/', ['q' => $strUser], 0),
+            'searchUsers',
+            $strUser
+        );
+    }
+
     public function getProfile($iMembershipType, $iMembershipId, $aComponents = [])
     {
         $this->r->addRequest(
