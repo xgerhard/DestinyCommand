@@ -560,7 +560,7 @@ class Action
     private function isTextCommand($strAction)
     {
         $a = array(
-            'default_info' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com for help @DestinyCommand on Twitter. Have you tried "!destiny setplayer" or "!destiny xur" yet',
+            'default_info' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com for help @DestinyCommand on Twitter. Have you tried "!destiny setaccount" yet: https://twitter.com/DestinyCommand/status/1164196373933318144 ',
             'help' => 'Usage !destiny <action> <user> <platform>, Command list: destinycommand.com for help @DestinyCommand on Twitter',
             'commands' => 'Command list: destinycommand.com',
             'setplayer' => 'x',
