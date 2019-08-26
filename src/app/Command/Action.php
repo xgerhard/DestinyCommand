@@ -205,6 +205,7 @@ class Action
             'akills' => 'weaponKillsAbility',
             'grenade' => 'weaponKillsGrenade',
             'grenadelauncher' => 'weaponKillsGrenadeLauncher',
+            'bow' => 'weaponKillsBow',
             'bestwep' => 'weaponBestType',
             'wl' => 'winLossRatio',
             'lks' => 'longestKillSpree',
