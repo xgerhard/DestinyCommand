@@ -34,7 +34,7 @@ class BungieProvider
                     // Xur date: Friday 17:00 - Tuesday 17:00
                     $bXurHere = false;
                     $oCurrDate = new Carbon();
-                    if(in_array($oCurrDate->day, [6, 0, 1]) || ($oCurrDate->day == 5 && $oCurrData->hour >= 17) || ($oCurrDate->day == 2 && $oCurrData->hour < 17))
+                    if(in_array($oCurrDate->dayOfWeek, [6, 0, 1]) || ($oCurrDate->dayOfWeek == 5 && $oCurrDate->hour >= 17) || ($oCurrDate->dayOfWeek == 2 && $oCurrDate->hour < 17))
                         $bXurHere = true;
 
                     if(!$bCache)
