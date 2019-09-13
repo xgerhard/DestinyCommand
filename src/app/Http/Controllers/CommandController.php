@@ -330,7 +330,7 @@ class CommandController
                     $oSetplayer = new Setplayer;
 
                     if($oSetplayer->setPlayer($oPlayer))
-                        $oAction->text = 'Succesfully saved player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']';
+                        $oAction->text = 'Succesfully saved player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .'] (If you play on multiple platforms, have a look at the "setaccount" command, this will always grab the latest played platform: https://twitter.com/DestinyCommand/status/1164196373933318144 )';
                     else
                         $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']. Note: setplayer is a Nightbot only feature';
                 }
