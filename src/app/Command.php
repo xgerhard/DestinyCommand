@@ -71,7 +71,7 @@ class Command
 
     public function setDefaultConsole($strConsole)
     {
-        $aConsoles = array("xbox" => 1, "ps" => 2, "xb" => 1, "xb1" => 1, "psn" => 2, "playstation" => 2, "ps4" => 2, "pc" => 4, "bnet" => 4);
+        $aConsoles = array("xbox" => 1, "ps" => 2, "xb" => 1, "xb1" => 1, "psn" => 2, "playstation" => 2, "ps4" => 2, "pc" => 3, "bnet" => 3, "steam" => 3);
         $this->defaultConsole = $aConsoles[$strConsole] ?? 1;
     }
 

@@ -10,7 +10,7 @@ class Query
 
     public function __construct($strQuery)
     {
-        $aConsoles = array("xbox" => 1, "ps" => 2, "xb" => 1, "xb1" => 1, "psn" => 2, "playstation" => 2, "ps4" => 2, "pc" => 4, "bnet" => 4, "bungienet" => 254);
+        $aConsoles = array("xbox" => 1, "ps" => 2, "xb" => 1, "xb1" => 1, "psn" => 2, "playstation" => 2, "ps4" => 2, "pc" => 3, "bnet" => 3, "steam" => 3, "bungienet" => 254);
 
         // Seperate query by spaces
         $strQuery = urldecode($strQuery);
