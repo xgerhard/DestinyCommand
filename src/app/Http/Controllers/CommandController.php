@@ -585,7 +585,7 @@ class CommandController
                         foreach($aFoundPlayers as $oFoundPlayer)
                         {
                             // Save players for faster future searches
-                            if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId], ['membershipType', '=', $oFoundPlayer->membershipType]])->first())
+                            if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId]])->first())
                             {
                                 if(strtolower($oDestinyPlayer->displayName) != strtolower($oFoundPlayer->displayName))
                                 {
