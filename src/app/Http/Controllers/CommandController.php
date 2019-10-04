@@ -305,6 +305,15 @@ class CommandController
                 else
                     throw new Exception('No players found');
             }
+
+            if(!empty($aPlayers))
+            {
+                foreach($aPlayers as $oPlayer)
+                {
+                    if($oPlayer->membershipType == 4)
+                        $oPlayer->membershipType = 3;
+                }
+            }
         }
 
         // Since were using multiCurl were looping the actions twice, first time to setup the needed request, so we can perform them all at once. Second loop we can read the responses.
@@ -326,7 +335,7 @@ class CommandController
                 else
                 {
                     foreach($aPlayers as $oPlayer) break;
-                    $aConsoles = [1 => "Xbox", 2 => "PS", 3 => "PC"];
+                    $aConsoles = [1 => "Xbox", 2 => "PS", 3 => "PC", 4 => "PC"];
                     $oSetplayer = new Setplayer;
 
                     if($oSetplayer->setPlayer($oPlayer))
@@ -501,7 +510,7 @@ class CommandController
                         $oLastPlayed = $oLinkedProfile;
                 }
 
-                if(!$oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oLastPlayed->membershipId], ['membershipType', '=', $oLastPlayed->membershipType]])->first())
+                if(!$oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oLastPlayed->membershipId]])->first())
                 {
                     $oDestinyPlayer = new DestinyPlayer;
                     $oDestinyPlayer->membershipId = $oLastPlayed->membershipId;
