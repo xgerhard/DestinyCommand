@@ -335,7 +335,7 @@ class CommandController
                 else
                 {
                     foreach($aPlayers as $oPlayer) break;
-                    $aConsoles = [1 => "Xbox", 2 => "PS", 3 => "PC", 4 => "PC"];
+                    $aConsoles = [1 => "Xbox", 2 => "PS", 3 => "PC"];
                     $oSetplayer = new Setplayer;
 
                     if($oSetplayer->setPlayer($oPlayer))
