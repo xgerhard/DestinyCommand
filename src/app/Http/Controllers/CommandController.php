@@ -518,6 +518,11 @@ class CommandController
                     $oDestinyPlayer->displayName = $oLastPlayed->displayName;
                     $oDestinyPlayer->save();
                 }
+                elseif($oDestinyPlayer->displayName != $oLastPlayed->displayName)
+                {
+                    $oDestinyPlayer->displayName = $oLastPlayed->displayName;
+                    $oDestinyPlayer->save();
+                }
                 return $oDestinyPlayer;
             }
             else return $aLinkedProfiles->profiles;
