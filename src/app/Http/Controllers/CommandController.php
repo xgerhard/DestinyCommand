@@ -191,6 +191,8 @@ class CommandController
                                             $oStat->playlist = 'Gambit';
                                         elseif($oStat->playlist == 'pvecomp_mamba')
                                             $oStat->playlist = 'Gambit Prime';
+                                        elseif($oStat->playlist == 'trials_of_osiris')
+                                            $oStat->playlist = 'Trials';
 
                                         $strRes .= '['. ucfirst($oStat->playlist) .'] ';
                                         $bPlaylistIntro = true;

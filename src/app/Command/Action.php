@@ -400,7 +400,7 @@ class Action
             'supremacy' => 31,
             'survival' => 37,
             'countdown' => 38,
-            'trials' => 39,
+            'trials' => 84,
             'social' => 40,
             'rumble' => 48,
             'doubles' => 50,
