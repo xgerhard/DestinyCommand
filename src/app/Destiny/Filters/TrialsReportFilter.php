@@ -23,40 +23,18 @@ class TrialsReportFilter
             $aTeam = [];
             foreach($this->results AS $oPlayer)
             {
-                if(!empty($oPlayer->activities))
+                if(isset($oPlayer->current))
                 {
-                    $iGames = 0;
-                    $iWin = 0;
-                    $iLoss = 0;
-                    $iKills = 0;
-                    $iDeaths = 0;
-                    $iAssists = 0;
-
-                    foreach($oPlayer->activities AS $oActivity)
-                    {
-                        if($oActivity->standing != 3)
-                        {
-                            if($oActivity->standing == 0)
-                                $iWin++;
-                            elseif($oActivity->standing == 1)
-                                $iLoss++;
-
-                            $iGames++;
-                            $iKills += $oActivity->kills;
-                            $iDeaths += $oActivity->deaths;
-                            $iAssists += $oActivity->assists;
-                        }
-                    }
-
                     $aTeam[] = new TrialsReportFireteamReport((object) array(
                         'displayName' => $oPlayer->displayName,
-                        'kills' => $iKills,
-                        'deaths' => $iDeaths,
-                        'assists' => $iAssists,
-                        'games' => $iGames,
-                        'winp' => $iLoss === 0 ? 100 : ($iWin > 0 ? number_format((($iWin / $iGames) * 100), 2, ".", ",") : 0),
-                        'kd' => $iDeaths > 0 ? number_format(($iKills / $iDeaths), 2, ".", ",") : $iKills,
-                        'kda' => $iDeaths > 0 ? number_format((($iKills + $iAssists) / $iDeaths), 2, ".", ",") : $iKills
+                        'kills' => $oPlayer->current->kills,
+                        'deaths' => $oPlayer->current->deaths,
+                        'assists' => $oPlayer->current->assists,
+                        'games' => $oPlayer->current->matches,
+                        'winp' => $oPlayer->current->losses == 0 ? 100 : (($oPlayer->current->matches - $oPlayer->current->losses) > 0 ? number_format(((($oPlayer->current->matches - $oPlayer->current->losses) / $oPlayer->current->matches) * 100), 2, ".", ",") : 0),
+                        'kd' => $oPlayer->current->deaths > 0 ? number_format(($oPlayer->current->kills / $oPlayer->current->deaths), 2, ".", ",") : $oPlayer->current->kills,
+                        'kda' => $oPlayer->current->deaths > 0 ? number_format((($oPlayer->current->kills + $oPlayer->current->assists) / $oPlayer->current->deaths), 2, ".", ",") : $oPlayer->current->kills,
+                        'flawless' => $oPlayer->current->flawless
                     ));
                 }
             }

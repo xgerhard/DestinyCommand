@@ -11,6 +11,7 @@ class TrialsReportFireteamReport
     public $kd;
     public $kda;
     public $games;
+    public $flawless;
 
     public function __construct($oStatReport)
     {
@@ -22,6 +23,7 @@ class TrialsReportFireteamReport
         $this->kd = $oStatReport->kd;
         $this->kda = $oStatReport->kda;
         $this->games = $oStatReport->games;
+        $this->flawless = $oStatReport->flawless;
     }
 }
 ?>
