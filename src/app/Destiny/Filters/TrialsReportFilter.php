@@ -16,7 +16,7 @@ class TrialsReportFilter
         }
     }
 
-    public function getFireteamStats($aOptions = [])
+    public function getFireteamStats($oOptions = [])
     {
         if(isset($this->results) && !empty($this->results))
         {
@@ -37,6 +37,8 @@ class TrialsReportFilter
                         'flawless' => $oPlayer->current->flawless
                     ));
                 }
+
+                if(isset($oOptions->team) && $oOptions->team === false) break;
             }
             return $aTeam;
         }

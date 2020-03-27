@@ -82,7 +82,7 @@ class Action
     {
         $aTrialsReportActions = array(
             "trialsteam" => "getFireteam",
-            "tt" => "getFireteam"
+            'trialsweekly' => "getFireteam"
         );
 
         if(isset($aTrialsReportActions[$strAction]))
@@ -92,7 +92,10 @@ class Action
                 'title' => 'TrialsTeam',
                 'provider' => 'TrialsReportProvider',
                 'endpoint' => $aTrialsReportActions[$strAction],
-                'filter' => 'getFireteamStats'
+                'filter' => 'getFireteamStats',
+                'options' => (object) array(
+                    'team' => (strpos($strAction, 'team') !== false ? true : false)
+                )
             );
         }
         return false;
@@ -601,6 +604,7 @@ class Action
     private function getAlias($strAction)
     {
         $a = array(
+            'tw' => 'trialsweekly',
             'tt' => 'trialsteam',
             'kinetic' => 'primary',
             'energy' => 'secondary',
