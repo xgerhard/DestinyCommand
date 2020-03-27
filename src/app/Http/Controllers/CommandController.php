@@ -171,7 +171,7 @@ class CommandController
 
                                         case $x instanceof TrialsReportFireteamReport:
                                             $oFireteamStatReport = $x;
-                                            $strCharacterRes .= '['. $this->formatNoBnet($oFireteamStatReport->displayName) .': Games: '. $oFireteamStatReport->games .' (W'. $oFireteamStatReport->winp .'%) | KD: '. $oFireteamStatReport->kd .' | KA/D: '. $oFireteamStatReport->kda . ($oFireteamStatReport->flawless > 0 ? ' | Flawless: '. $oFireteamStatReport->flawless : '') .'], ';
+                                            $strCharacterRes .= '['. $this->formatNoBnet($oFireteamStatReport->displayName) .': Games: '. $oFireteamStatReport->games . ($oFireteamStatReport->games > 0 ? ' (W'. $oFireteamStatReport->winp .'%)' : '') .' | KD: '. $oFireteamStatReport->kd .' | KA/D: '. $oFireteamStatReport->kda . ($oFireteamStatReport->flawless > 0 ? ' | Flawless: '. $oFireteamStatReport->flawless : '') .'], ';
                                             $bFound = true;
                                         break;
 
