@@ -15,6 +15,9 @@ Route::get('/auth/{service}', 'AuthController@AuthHandler');
 
 Route::get('/api/command', 'CommandController@parseRequest');
 
+Route::get('/tools/bungienameconverter', 'BungieNameConverterController@convert');
+Route::post('/tools/bungienameconverter', 'BungieNameConverterController@convert');
+
 Route::group(['prefix' => 'dashboard', 'middleware' => 'CheckOAuth:Bungie'], function()
 {
     Route::get('/', function()
