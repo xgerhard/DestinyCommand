@@ -337,7 +337,7 @@ class CommandController
                 else
                 {
                     foreach($aPlayers as $oPlayer) break;
-                    $aConsoles = [1 => "Xbox", 2 => "PS", 3 => "PC"];
+                    $aConsoles = [1 => "Xbox", 2 => "PS", 3 => "PC", 5 => "Stadia"];
                     $oSetplayer = new Setplayer;
 
                     if($oSetplayer->setPlayer($oPlayer))
@@ -618,7 +618,15 @@ class CommandController
                                 $oDestinyPlayer->save();
                             }
 
-                            if(strtolower($oDestinyPlayer->displayName) == strtolower($strGamertag) && ($oDestinyPlayer->membershipType == $aTempPlayers[$strGamertag] || count($aFoundPlayers) == 1))
+                            if(isset($oFoundPlayer->crossSaveOverride) && $oFoundPlayer->crossSaveOverride == $oFoundPlayer->membershipType)
+                            {
+                                if(isset($oFoundPlayer->bungieGlobalDisplayName))
+                                    $oDestinyPlayer->displayName = $oFoundPlayer->bungieGlobalDisplayName;
+
+                                $aPlayersTemp[] = $oDestinyPlayer;
+                                continue;
+                            }
+                            elseif(strtolower($oDestinyPlayer->displayName) == strtolower($strGamertag) && ($oDestinyPlayer->membershipType == $aTempPlayers[$strGamertag] || count($aFoundPlayers) == 1))
                             {
                                 $aPlayersTemp[] = $oDestinyPlayer;
                             }
