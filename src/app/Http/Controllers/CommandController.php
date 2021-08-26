@@ -591,8 +591,10 @@ class CommandController
                 {
                     if(empty($aFoundPlayers))
                     {
-                        if($aTempPlayers[$strGamertag] == 4 || strpos($strGamertag, '#') !== false) $strGamertag = $this->formatNoBnet($strGamertag);
-                        throw new Exception('Player '. $strGamertag .' not found');
+                        if($aTempPlayers[$strGamertag] == 4 || strpos($strGamertag, '#') !== false)
+                            $strGamertag = $this->formatNoBnet($strGamertag);
+
+                        throw new Exception('Player '. $strGamertag .' not found. (After the crossplay update you might need to update your commands: https://twitter.com/DestinyCommand/status/1430509496808398854)');
                     }
                     else
                     {
@@ -618,7 +620,10 @@ class CommandController
                                 $oDestinyPlayer->save();
                             }
 
-                            if(isset($oFoundPlayer->crossSaveOverride) && $oFoundPlayer->crossSaveOverride == $oFoundPlayer->membershipType)
+                            if(isset($oFoundPlayer->crossSaveOverride) && (
+                                $oFoundPlayer->crossSaveOverride == $oFoundPlayer->membershipType ||
+                                ($oFoundPlayer->crossSaveOverride == 0 && isset($oFoundPlayer->applicableMembershipTypes) && !empty($oFoundPlayer->applicableMembershipTypes))
+                            ))
                             {
                                 if(isset($oFoundPlayer->bungieGlobalDisplayName))
                                     $oDestinyPlayer->displayName = $oFoundPlayer->bungieGlobalDisplayName;
