@@ -20,6 +20,7 @@ class EquipmentItem
         $this->bucketTypeHash = $oItem->inventory->bucketTypeHash ?? 0;
         $this->light = $oItemInstance->primaryStat->value ?? 0;
         $this->quantity = $oItemInstance->quantity ?? 1;
+        $this->tierTypeHash = $oItem->inventory->tierTypeHash ?? 0;
 
         if($bPerks && !$oItem->redacted)
         {

@@ -24,6 +24,15 @@ class BungieProvider
                 $strCacheKey = 'vendor-'. $oAction->options->hash;
                 $bCache = Cache::has($strCacheKey);
 
+                // force refresh
+                $request = request();
+                $bForce = false;
+                if($request->has('refresh_xur'))
+                {
+                    $bForce = true;
+                    $bCache = false;
+                }
+
                 if($bPrepare === true)
                 {
                     if(!$bCache)
@@ -42,16 +51,21 @@ class BungieProvider
                         $oVendors = $this->destiny->get('getPublicVendors')['getPublicVendors'];
                         $oVendor = new Vendor($oAction->options->hash, $oVendors);
                         $aVendorItems = $oVendor->{$oAction->filter}();
-                        $oRefresh = Carbon::parse('next friday 17:00:00');
+                        $oRefresh = Carbon::parse('next friday 17:00:20');
                         $aResponse = call_user_func_array('array_merge', $aVendorItems);
 
                         if(!empty($aResponse))
                         {
-                            $aResponse['textStart'] = 'Xur is selling: ';
+                            $aResponse['textStart'] = 'Xur is selling Exotics: ';
                             $aResponse['textEnd'] = 'New inventory: '. $oRefresh->format('M jS');
 
                             Cache::put($strCacheKey, $aResponse, $oRefresh);
-                            Cache::forget('xur-location');
+
+                            if(!$bForce)
+                                Cache::forget('xur-location');
+                            elseif(Cache::has('xur-location'))
+                                $aResponse['textStart'] = 'Xur is located at: '. Cache::get('xur-location') .'. He is selling Exotics: ';
+
                             return $aResponse;
                         }
                     }
@@ -59,7 +73,7 @@ class BungieProvider
                     {
                         $aResponse = Cache::get($strCacheKey);
                         if(Cache::has('xur-location') && $bXurHere)
-                            $aResponse['textStart'] = 'Xur is located at: '. Cache::get('xur-location') .'. He is selling: ';
+                            $aResponse['textStart'] = 'Xur is located at: '. Cache::get('xur-location') .'. He is selling Exotics: ';
 
                         if(!$bXurHere)
                             $aResponse['textStart'] = str_replace('is', 'was', $aResponse['textStart']);

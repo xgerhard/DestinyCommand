@@ -35,7 +35,7 @@ class Vendor
             $oItem = new EquipmentItem($oSaleItem);
             $oItem->load($oSaleItem, [], false);
 
-            if($oItem)
+            if($oItem && isset($oItem->tierTypeHash) && $oItem->tierTypeHash == 2759499571) // Exotics only
             {
                 switch($oItem->bucketTypeHash)
                 {
