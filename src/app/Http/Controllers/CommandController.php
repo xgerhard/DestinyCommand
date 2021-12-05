@@ -214,11 +214,27 @@ class CommandController
                 if(isset($aRes['response']['textStart']))
                     $strRes .= $aRes['response']['textStart'];
 
+                // Temp fix more items in xur
+                $iItems = 0;
+                $bLimitReached = false;
+
                 foreach($aRes['response'] as $x)
                 {
                     switch(true)
                     {
                         case $x instanceof EquipmentItem:
+
+                            // Temp fix more items in xur
+                            $iItems++;
+                            if($iItems > 9)
+                            {
+                                if($bLimitReached === false)
+                                    $strRes .= '[Plus more..]  ';
+
+                                $bLimitReached = true;
+                                break;
+                            }
+
                             // Name, light/power, perks
                             $strRes .= $x->name;
                             if(isset($x->light) && $x->light > 50)
@@ -574,8 +590,11 @@ class CommandController
                     $this->command->query->gamertags[$i] = $strGamertag;
                 }
 
+                if(strpos($strGamertag, '#') === false)
+                    throw new Exception('Player '. $strGamertag .' not found. Please search using your Bungie name');
+
                 // Setup playersearch
-                $oBungie->SearchDestinyPlayer($strGamertag);
+                $oBungie->searchDestinyPlayerByBungieName($strGamertag);
 
                 // Save temp player array so we can filter these in the player search responses
                 $aTempPlayers[$strGamertag] = $iTempConsole;
@@ -584,7 +603,7 @@ class CommandController
             if(!empty($aTempPlayers))
             {
                 // Get playersearch responses
-                $aPlayersResults = $oBungie->get('searchDestinyPlayer');
+                $aPlayersResults = $oBungie->get('searchDestinyPlayerByBungieName');
 
                 // Loop player responses
                 foreach($aPlayersResults as $strGamertag => $aFoundPlayers)
