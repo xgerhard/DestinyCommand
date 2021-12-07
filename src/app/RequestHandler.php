@@ -42,7 +42,10 @@ class RequestHandler
                 {
                     foreach($aCategoryValue AS $strIdentifier => $oRequest)
                     {
-                        $a[$strIdentifier] = $oClient->requestAsync('GET', $oRequest->url);
+                        if($oRequest->method == 'GET')
+                            $a[$strIdentifier] = $oClient->requestAsync($oRequest->method, $oRequest->url);
+                        elseif($oRequest->method == 'POST')
+                            $a[$strIdentifier] = $oClient->requestAsync($oRequest->method, $oRequest->url, ['json' => $oRequest->postFields, 'content-type' => 'application/json']);
                     }
                 }
             }

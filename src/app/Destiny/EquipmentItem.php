@@ -43,10 +43,16 @@ class EquipmentItem
                         }
 
                         // Show tier upgrade type
-                        if(strpos($oPlug->displayProperties->name, 'Tier ') !== false && isset($oPlug->investmentStats[0]))
+                        if((strpos($oPlug->displayProperties->name, 'Tier ') !== false || $oPlug->displayProperties->name == 'Masterwork') && isset($oPlug->investmentStats[0]))
                         {
                             $oStat = $oManifest->getDefinition('Stat', $oPlug->investmentStats[0]->statTypeHash);
-                            if(isset($oStat->displayProperties->name)) $oPlug->displayProperties->name = 'Tier '. $oPlug->investmentStats[0]->value .' ('. $oStat->displayProperties->name .')';
+                            if(isset($oStat->displayProperties->name))
+                            {
+                                if(strpos($oPlug->displayProperties->name, 'Tier ') !== false)
+                                    $oPlug->displayProperties->name = 'Tier '. $oPlug->investmentStats[0]->value;
+
+                                $oPlug->displayProperties->name .= ' ('. $oStat->displayProperties->name .')';
+                            }
                         }
 
                         // Only show perks + mods
