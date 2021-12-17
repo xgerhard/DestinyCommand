@@ -16,16 +16,15 @@ class DestinyClient
         $this->r = new RequestHandler;
     }
 
-    public function searchDestinyPlayerByBungieName($strBungieName)
+    public function searchDestinyPlayerByBungieName($strDisplayName, $iDisplayNameCode)
     {
-        list($strDisplayName, $iDisplayNameCode) = explode('#', $strBungieName);
         $this->r->addRequest(
             new DestinyRequest('/Platform/Destiny2/SearchDestinyPlayerByBungieName/all/', [], 3400, 'POST', [
                 'displayName' => $strDisplayName,
                 'displayNameCode' => $iDisplayNameCode
             ]),
             'searchDestinyPlayerByBungieName',
-            $strBungieName
+            $strDisplayName .'#'. $iDisplayNameCode
         );
     }
 
