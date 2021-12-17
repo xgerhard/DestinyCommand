@@ -17,6 +17,7 @@ use App\Destiny\EquipmentItem;
 use App\Destiny\Stat;
 use App\Destiny\TrialsReportFireteamReport;
 use App\Destiny\DestinyPlayer;
+use App\Destiny\DestinyBungiePlayer;
 use App\Destiny\BungieNetAccount;
 use App\Destiny\CharacterProfileValue;
 
@@ -130,7 +131,7 @@ class CommandController
                         if(isset($aRes['response'][$strKey]))
                         {
                             $bPlaylistIntro = false;
-                            $strRes .= $bGamertag ? (($oPlayer->membershipType == 4 ? $this->formatNoBnet($oPlayer->displayName) : $oPlayer->displayName) .': ') : '';
+                            $strRes .= $bGamertag ? $this->formatNoBnet($oPlayer->displayName) .': ' : '';
                             if(count($aRes['response'][$strKey]) > 1) $strRes .= '[';
                             $bFound = false;
 
@@ -593,11 +594,30 @@ class CommandController
                 if(strpos($strGamertag, '#') === false)
                     throw new Exception('Player '. $strGamertag .' not found. Please search using your Bungie name');
 
-                // Setup playersearch
-                $oBungie->searchDestinyPlayerByBungieName($strGamertag);
+                // Check previously fetched players
+                list($strDisplayName, $iDisplayNameCode) = explode('#', $strGamertag);
 
-                // Save temp player array so we can filter these in the player search responses
-                $aTempPlayers[$strGamertag] = $iTempConsole;
+                $oDestinyBungiePlayer = DestinyBungiePlayer::where([
+                    ['display_name', '=', $strDisplayName],
+                    ['display_code', '=', $iDisplayNameCode]
+                ])->first();
+
+                if($oDestinyBungiePlayer)
+                {
+                    $aPlayers[$strGamertag] = new DestinyPlayer([
+                        'membershipId' => $oDestinyBungiePlayer->membership_id,
+                        'membershipType' => $oDestinyBungiePlayer->membership_type,
+                        'displayName' => $oDestinyBungiePlayer->display_name
+                    ]);
+                }
+                else
+                {
+                    // Setup playersearch
+                    $oBungie->searchDestinyPlayerByBungieName($strDisplayName, $iDisplayNameCode);
+
+                    // Save temp player array so we can filter these in the player search responses
+                    $aTempPlayers[$strGamertag] = $iTempConsole;
+                }
             }
 
             if(!empty($aTempPlayers))
@@ -644,6 +664,38 @@ class CommandController
                                 ($oFoundPlayer->crossSaveOverride == 0 && isset($oFoundPlayer->applicableMembershipTypes) && !empty($oFoundPlayer->applicableMembershipTypes))
                             ))
                             {
+                                $oDestinyBungiePlayer = DestinyBungiePlayer::where('membership_id', $oFoundPlayer->membershipId)
+                                    ->orWhere([
+                                        ['display_name', '=', $oFoundPlayer->bungieGlobalDisplayName],
+                                        ['display_code', '=', $oFoundPlayer->bungieGlobalDisplayNameCode]
+                                    ])->first();
+
+                                if($oDestinyBungiePlayer)
+                                {
+                                    if(
+                                        $oDestinyBungiePlayer->membership_type != $oFoundPlayer->membershipType ||
+                                        $oDestinyBungiePlayer->membership_id != $oFoundPlayer->membershipId ||
+                                        $oDestinyBungiePlayer->display_name != $oFoundPlayer->bungieGlobalDisplayName ||
+                                        $oDestinyBungiePlayer->display_code != $oFoundPlayer->bungieGlobalDisplayNameCode
+                                    )
+                                    {
+                                        $oDestinyBungiePlayer->membership_type = $oFoundPlayer->membershipType;
+                                        $oDestinyBungiePlayer->membership_id = $oFoundPlayer->membershipId;
+                                        $oDestinyBungiePlayer->display_name = $oFoundPlayer->bungieGlobalDisplayName;
+                                        $oDestinyBungiePlayer->display_code = $oFoundPlayer->bungieGlobalDisplayNameCode;
+                                        $oDestinyBungiePlayer->save();
+                                    }
+                                }
+                                else
+                                {
+                                    $oDestinyBungiePlayer = new DestinyBungiePlayer;
+                                    $oDestinyBungiePlayer->membership_type = $oFoundPlayer->membershipType;
+                                    $oDestinyBungiePlayer->membership_id = $oFoundPlayer->membershipId;
+                                    $oDestinyBungiePlayer->display_name = $oFoundPlayer->bungieGlobalDisplayName;
+                                    $oDestinyBungiePlayer->display_code = $oFoundPlayer->bungieGlobalDisplayNameCode;
+                                    $oDestinyBungiePlayer->save();
+                                }
+
                                 if(isset($oFoundPlayer->bungieGlobalDisplayName))
                                     $oDestinyPlayer->displayName = $oFoundPlayer->bungieGlobalDisplayName;
 
