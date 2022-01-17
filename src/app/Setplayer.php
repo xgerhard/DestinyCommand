@@ -66,7 +66,7 @@ class Setplayer
             if($oUserPlayer)
             {
                 // Update player?
-                if($oUserPlayer->destinyPlayer->membershipId != $oDestinyPlayer->membershipId)
+                if(!$oUserPlayer->destinyPlayer || $oUserPlayer->destinyPlayer->membership_id != $oDestinyPlayer->membershipId)
                 {
                     $oUserPlayer->destinyPlayerId = $oDestinyPlayer->id;
                     $oUserPlayer->save();
