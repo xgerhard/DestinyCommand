@@ -304,7 +304,7 @@ class CommandController
         if($this->command->query->reqUser === true)
         {
             $aPlayers = $this->getPlayers();
-            if(empty($aPlayers)) 
+            if(empty($aPlayers))
             {
                 $oSetplayer = new Setplayer;
                 $oUserPlayer = $oSetplayer->getPlayer();
@@ -319,20 +319,19 @@ class CommandController
 
                     // If account search have no results
                     if(empty($aPlayers) && $oUserPlayer->destinyPlayerId != 0)
-                        $aPlayers[$oUserPlayer->destinyPlayer->displayName] = $oUserPlayer->destinyPlayer;
+                    {
+                        $aPlayers[$oUserPlayer->destinyPlayer->display_name] = new DestinyPlayer([
+                            'id' => $oUserPlayer->destinyPlayer->id,
+                            'membershipId' => $oUserPlayer->destinyPlayer->membership_id,
+                            'membershipType' => $oUserPlayer->destinyPlayer->membership_type,
+                            'displayName' => $oUserPlayer->destinyPlayer->display_name
+                        ]);
+                    }
                 }
-                else
-                    throw new Exception('No players found');
             }
 
-            if(!empty($aPlayers))
-            {
-                foreach($aPlayers as $oPlayer)
-                {
-                    if($oPlayer->membershipType == 4)
-                        $oPlayer->membershipType = 3;
-                }
-            }
+            if(empty($aPlayers))
+                throw new Exception('No players found');
         }
 
         // Since were using multiCurl were looping the actions twice, first time to setup the needed request, so we can perform them all at once. Second loop we can read the responses.
@@ -358,9 +357,9 @@ class CommandController
                     $oSetplayer = new Setplayer;
 
                     if($oSetplayer->setPlayer($oPlayer))
-                        $oAction->text = 'Succesfully saved player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .'] (If you play on multiple platforms, have a look at the "setaccount" command, this will always grab the latest played platform: https://twitter.com/DestinyCommand/status/1164196373933318144 )';
+                        $oAction->text = 'Succesfully saved player: '. $oPlayer->displayName;
                     else
-                        $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .' ['. $aConsoles[$oPlayer->membershipType] .']. Note: setplayer is a Nightbot only feature';
+                        $oAction->text = 'Something went wrong saving player: '. $oPlayer->displayName .'. Note: setplayer is a Nightbot only feature';
                 }
             }
             elseif($oAction->key == 'setaccount')
@@ -529,20 +528,28 @@ class CommandController
                         $oLastPlayed = $oLinkedProfile;
                 }
 
-                if(!$oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oLastPlayed->membershipId]])->first())
+                if(!$oDestinyPlayer = DestinyBungiePlayer::where([['membership_id', '=', $oLastPlayed->membershipId]])->first())
                 {
-                    $oDestinyPlayer = new DestinyPlayer;
-                    $oDestinyPlayer->membershipId = $oLastPlayed->membershipId;
-                    $oDestinyPlayer->membershipType = $oLastPlayed->membershipType;
-                    $oDestinyPlayer->displayName = $oLastPlayed->displayName;
+                    $oDestinyPlayer = new DestinyBungiePlayer;
+                    $oDestinyPlayer->membership_id = $oLastPlayed->membershipId;
+                    $oDestinyPlayer->membership_type = $oLastPlayed->membershipType;
+                    $oDestinyPlayer->display_name = $oLastPlayed->bungieGlobalDisplayName;
+                    $oDestinyPlayer->display_code = $oLastPlayed->bungieGlobalDisplayNameCode;
                     $oDestinyPlayer->save();
                 }
-                elseif($oDestinyPlayer->displayName != $oLastPlayed->displayName)
+                elseif($oDestinyPlayer->display_name != $oLastPlayed->bungieGlobalDisplayName || $oDestinyPlayer->display_code != $oLastPlayed->bungieGlobalDisplayNameCode)
                 {
-                    $oDestinyPlayer->displayName = $oLastPlayed->displayName;
+                    $oDestinyPlayer->display_name = $oLastPlayed->bungieGlobalDisplayName;
+                    $oDestinyPlayer->display_code = $oLastPlayed->bungieGlobalDisplayNameCode;
                     $oDestinyPlayer->save();
                 }
-                return $oDestinyPlayer;
+
+                return new DestinyPlayer([
+                    'id' => $oDestinyPlayer->id,
+                    'membershipId' => $oDestinyPlayer->membership_id,
+                    'membershipType' => $oDestinyPlayer->membership_type,
+                    'displayName' => $oDestinyPlayer->display_name
+                ]);
             }
             else return $aLinkedProfiles->profiles;
         }
@@ -605,6 +612,7 @@ class CommandController
                 if($oDestinyBungiePlayer)
                 {
                     $aPlayers[$strGamertag] = new DestinyPlayer([
+                        'id' => $oDestinyBungiePlayer->id,
                         'membershipId' => $oDestinyBungiePlayer->membership_id,
                         'membershipType' => $oDestinyBungiePlayer->membership_type,
                         'displayName' => $oDestinyBungiePlayer->display_name
@@ -641,24 +649,6 @@ class CommandController
                         $aPlayersTemp = [];
                         foreach($aFoundPlayers as $oFoundPlayer)
                         {
-                            // Save players for faster future searches
-                            if($oDestinyPlayer = DestinyPlayer::where([['membershipId', '=', $oFoundPlayer->membershipId]])->first())
-                            {
-                                if(strtolower($oDestinyPlayer->displayName) != strtolower($oFoundPlayer->displayName))
-                                {
-                                    $oDestinyPlayer->displayName = $oFoundPlayer->displayName;
-                                    $oDestinyPlayer->save();
-                                }
-                            }
-                            else
-                            {
-                                $oDestinyPlayer = new DestinyPlayer;
-                                $oDestinyPlayer->membershipId = $oFoundPlayer->membershipId;
-                                $oDestinyPlayer->membershipType = $oFoundPlayer->membershipType;
-                                $oDestinyPlayer->displayName = $oFoundPlayer->displayName;
-                                $oDestinyPlayer->save();
-                            }
-
                             if(isset($oFoundPlayer->crossSaveOverride) && (
                                 $oFoundPlayer->crossSaveOverride == $oFoundPlayer->membershipType ||
                                 ($oFoundPlayer->crossSaveOverride == 0 && isset($oFoundPlayer->applicableMembershipTypes) && !empty($oFoundPlayer->applicableMembershipTypes))
@@ -696,15 +686,15 @@ class CommandController
                                     $oDestinyBungiePlayer->save();
                                 }
 
-                                if(isset($oFoundPlayer->bungieGlobalDisplayName))
-                                    $oDestinyPlayer->displayName = $oFoundPlayer->bungieGlobalDisplayName;
+                                $oDestinyPlayer = new DestinyPlayer([
+                                    'id' => $oDestinyBungiePlayer->id,
+                                    'membershipId' => $oDestinyBungiePlayer->membership_id,
+                                    'membershipType' => $oDestinyBungiePlayer->membership_type,
+                                    'displayName' => $oDestinyBungiePlayer->display_name
+                                ]);
 
                                 $aPlayersTemp[] = $oDestinyPlayer;
                                 continue;
-                            }
-                            elseif(strtolower($oDestinyPlayer->displayName) == strtolower($strGamertag) && ($oDestinyPlayer->membershipType == $aTempPlayers[$strGamertag] || count($aFoundPlayers) == 1))
-                            {
-                                $aPlayersTemp[] = $oDestinyPlayer;
                             }
                         }
 

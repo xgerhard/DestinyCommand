@@ -10,7 +10,7 @@ class UserPlayer extends Model
 
     public function destinyPlayer()
     {
-        return $this->hasOne('App\Destiny\DestinyPlayer', 'id', 'destinyPlayerId');
+        return $this->hasOne('App\Destiny\DestinyBungiePlayer', 'id', 'destinyPlayerId');
     }
 
     public function BungieNetAccount()
