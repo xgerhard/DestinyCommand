@@ -3,6 +3,7 @@ namespace App\Destiny;
 
 use App\Destiny\Filters\InventoryFilter;
 use App\Destiny\CharacterProfileValue;
+use App\Destiny\CharacterProgressionValue;
 
 class Profile
 {
@@ -22,6 +23,28 @@ class Profile
             foreach($this->characters->data AS $iCharacterId => $oCharacter)
             {
                 $aRes[$iCharacterId][$oOptions->field] = new CharacterProfileValue($oOptions->field, $oCharacter->{$oOptions->field}, $oCharacter->classHash);
+            }
+        }
+        return $aRes;
+    }
+
+    function getCharacterProgression($oOptions)
+    {
+        $aRes = [];
+        $iLatest = false;
+        if($oOptions->latest) $iLatest = $this->getLatestCharacterId();
+
+        foreach($this->characters->data AS $iCharacterId => $oCharacter)
+        {
+            if($iLatest && $iLatest != $iCharacterId) continue;
+
+            foreach($oOptions->progressions as $iProgressionId)
+            {
+                if(isset($this->characterProgressions->data->{$iCharacterId}->progressions->{$iProgressionId}))
+                {
+                    $oProgression = $this->characterProgressions->data->{$iCharacterId}->progressions->{$iProgressionId};
+                    $aRes[$iCharacterId][$iProgressionId] = new CharacterProgressionValue($iProgressionId, $oProgression->level, $oCharacter->classHash);
+                }
             }
         }
         return $aRes;

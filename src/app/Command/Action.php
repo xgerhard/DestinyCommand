@@ -7,7 +7,7 @@ class Action
     {
         $aAction = false;
         $strAction = $this->getAlias($strAction);
-        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isVendorCommand", "isGearCommand", "isCharacterProfileCommand", "isStatCommand");
+        $aFunctions = array("isTextCommand", "isTrialsReportCommand", "isVendorCommand", "isGearCommand", "isCharacterProfileCommand", "isCharacterProgressionCommand", "isStatCommand");
         foreach($aFunctions AS $strFunction)
         {
             $aAction = $this->{$strFunction}($strAction);
@@ -49,6 +49,34 @@ class Action
             ];
         }
         return false;
+    }
+
+    private function isCharacterProgressionCommand($strAction)
+    {
+        $aProgressions = [
+            'card' => (object) [
+                'latest' => true,
+                'progressions' => [1062449239, 2093709363]
+            ]
+        ];
+
+        if(isset($aProgressions[$strAction]))
+        {
+            return [
+                'key' => $strAction,
+                'title' => $strAction,
+                'provider' => 'BungieProvider',
+                'endpoint' => 'profile',
+                'filter' => 'getCharacterProgression',
+                'options' => (object) [
+                    'params' => [
+                        'components' => [202],
+                    ],
+                    'latest' => $aProgressions[$strAction]->latest,
+                    'progressions' => $aProgressions[$strAction]->progressions
+                ]
+            ];
+        }
     }
 
     private function isCharacterProfileCommand($strAction)
@@ -617,7 +645,8 @@ class Action
             'nade' => 'grenade',
             'powerlvl' => 'powerlevel',
             'light' => 'powerlevel',
-            'pwrlvl' => 'powerlevel'
+            'pwrlvl' => 'powerlevel',
+            'trialscard' => 'card'
         );
         return isset($a[$strAction]) ? $a[$strAction] : $strAction;
     }

@@ -20,6 +20,7 @@ use App\Destiny\DestinyPlayer;
 use App\Destiny\DestinyBungiePlayer;
 use App\Destiny\BungieNetAccount;
 use App\Destiny\CharacterProfileValue;
+use App\Destiny\CharacterProgressionValue;
 
 use App\Providers\BungieProvider;
 
@@ -166,6 +167,23 @@ class CommandController
                                         case $x instanceof CharacterProfileValue:
                                             $oCharacterProfile = $x;
                                             $strCharacterRes .= $aClasses[$oCharacterProfile->classHash] .': '. $oCharacterProfile->title .': '. $oCharacterProfile->displayValue;
+                                            $strCharacterRes .= ", ";
+                                            $bFound = true;
+                                        break;
+
+                                        case $x instanceof CharacterProgressionValue:
+                                            $oCharacterProgression = $x;    
+                                            if(count($aRes['response'][$strKey]) > 1)
+                                                $strCharacterRes .= $aClasses[$oCharacterProgression->classHash] .': ';
+
+                                            if($oCharacterProgression->title == 'Flawless')
+                                            {
+                                                if($oCharacterProgression->displayValue == 0)
+                                                    continue 2;
+                                                else
+                                                    $oCharacterProgression->displayValue = '❌';
+                                            }
+                                            $strCharacterRes .= $oCharacterProgression->title .': '. $oCharacterProgression->displayValue;
                                             $strCharacterRes .= ", ";
                                             $bFound = true;
                                         break;
