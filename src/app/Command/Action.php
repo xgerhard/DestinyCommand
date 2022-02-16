@@ -77,6 +77,7 @@ class Action
                 ]
             ];
         }
+        return false;
     }
 
     private function isCharacterProfileCommand($strAction)
