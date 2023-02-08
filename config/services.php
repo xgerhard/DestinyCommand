@@ -30,5 +30,9 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'destiny' => [
+        'api_key' => env('BUNGIE_API_KEY'),
+        'uri' => 'https://www.bungie.net/Platform'
+    ]
 
 ];
