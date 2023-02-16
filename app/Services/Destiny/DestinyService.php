@@ -2,10 +2,12 @@
 
 namespace App\Services\Destiny;
 
-use Illuminate\Support\Facades\Http;
 use App\Services\Destiny\DataTransferObjects\ProfileData;
+use App\Services\Destiny\DataTransferObjects\HistoricalStatsData;
 use App\Services\Destiny\Requests\GetProfileRequest;
 use App\Services\Destiny\Requests\GetHistoricalStatsRequest;
+use App\Services\Destiny\Exceptions\DestinyRequestException;
+use Illuminate\Support\Collection;
 
 class DestinyService
 {
@@ -16,13 +18,16 @@ class DestinyService
             ->withMembershipType($membershipType)
             ->withMembershipId($membershipId)
             ->send()
-            ->throw()
-            ->json('Response');
+            ->json();
 
-        return ProfileData::fromArray($data);
+        if (!isset($data['Response'])) {
+            throw new DestinyRequestException($data);
+        }
+
+        return ProfileData::fromArray($data['Response']);
     }
 
-    public function getHistoricalStats(string $membershipType, string $membershipId, string $characterId, array $parameteres): ProfileData
+    public function getHistoricalStats(string $membershipType, string $membershipId, string $characterId, array $parameteres): Collection
     {
         $data = GetHistoricalStatsRequest::build()
             ->withQuery($parameteres)
@@ -30,9 +35,12 @@ class DestinyService
             ->withMembershipId($membershipId)
             ->withCharacterId($characterId)
             ->send()
-            ->throw()
-            ->json('Response');
+            ->json();
 
-        return ProfileData::fromArray($data);
+        if (!isset($data['Response'])) {
+            throw new DestinyRequestException($data);
+        }
+
+        return collect($data['Response'])->map(fn (array $data) => HistoricalStatsData::fromArray($data));
     }
 }
