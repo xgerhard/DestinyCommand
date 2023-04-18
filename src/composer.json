@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^7.0",
-        "laravel/framework": "5.4.*",
+        "laravel/framework": "5.8.*",
         "laravel/tinker": "~1.0",
         "guzzlehttp/guzzle": "~6.0",
         "xgerhard/nbheaders": "dev-master"
